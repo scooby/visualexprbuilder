@@ -1,0 +1,19 @@
+There are two main packages in this distribution.
+
+The net.samuel.ben/* packages are Copyright 2009 Ben Samuel, All Rights Reserved. They are licensed under the GNU Public License.
+
+They are explicitly not licensed under the LGPL; I'd like to see free software using this library to gain an edge over commercial software.
+
+The com.mallardsoft.tuple package is redistributed under the terms of a Creative Commons reattribution license contained within. Software packages using the com.mallardsoft.tuple package will need to add the correct attribution.
+
+The folders othernotes and quicktests are not licensed for redistribution. If you really need to redistribute these files, please contact the author for permission.
+
+To obtain this distribution:
+
+git://github.com/scooby/visualexprbuilder.git
+
+To contact the author:
+
+Ben Samuel
+ben@samuel.net
+http://ben.samuel.net/

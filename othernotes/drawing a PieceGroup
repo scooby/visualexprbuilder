@@ -1,0 +1,75 @@
+Two kinds of rows:
+    Nib rows
+    Label rows
+
+Dimensional Values
+    LabelFontSize = 14 pts
+    BorderAmplitude = 2 pts
+    BorderWavelength = BorderAmplitude * 16
+    BorderWidth = BorderAmplitude * 2
+    NibRowHeight = BorderWidth + NibDescent
+    NibWidth = 8 pts
+    NibDescent = 4 pts
+    NibHorizontalSpacing = 6 pts (Must be at least this space between nibs 
+    	and nibs or sides)
+    LabelPadding = 2 pts
+    LabelMinHeight = 4 pts
+    LabelHeight = calculated
+    LabelWidth = calculated
+    LabelRowHeight = NibDescent * 2 + LabelPadding * 2 + LabelHeight
+    SlantyBoxHeight = LabelRowHeight
+    SlantyAngle = based on piece geometry (either 320, 0, 20)
+    SlantyBoxHeight = NibRowHeight * 2 + LabelRowHeight
+    Simplified from
+    	SlantyHeight2 = BorderWidth * sin s
+	SlantyWidth2 = BorderWidth * cos s
+	SlantyHeight1 = SlantyHeight - SlantyHeight2
+	SlantyWidth1 = SlantyHeight1 * tan s
+	SlantyWidth = SlantyWidth1 + SlantyWidth2
+    SlantyBoxWidth = tan(SlantyAngle) * (SlantyBoxHeight - sin(SlantyAngle) 
+    	* BorderWidth) + cos(SlantyAngle) * BorderWidth
+    BodyHeight = LabelRowHeight + NibDescent
+    LabelTop = (BodyHeight - LabelHeight) / 2 + NibDescent
+
+0->    TOP OF PIECE
+| X__       ___       ___       _X_    |  ___       ___       X__     ^
+vX   \     /   \     /   \     / | \   | /   \     /   \     X        |
+ |    \___/     \___/     \___/ /   \___X     \___/     \___/|        |
+  \          ^                 |         |                    \    nib row
+   \         |                  \       /                      \      |
+    |        |                   \_____/                        |     v
+L   |        |                                                  |R    ^
+E  /         |                                                 / I    |
+F /          |                                                /  G    |
+T|           |                                               |   H    |
+ |           |                                               |   T    |
+  \     body height                                           \       |
+S  \         |                                                 \ S label row
+I   |        |                                                  |I    |
+D   |        |                                                  |D    |
+E  /         |                                                 / E    |
+  /          |                                                /       |
+ |           |                                               |        |
+ |           v                                               |        v
+  X__       ___   |   ___|      ___       ___       ___       X__     ^
+ / \ \     /   \  |  /   X     /   \     /   \     /   \     / \      |
+    | \___/     \X__/     \___/     \___/     \___/     \___/   |     |
+ <-->           |          |     ^                                 nib row
+ Slanty-         \        / nib descent                               |
+ BoxWidth         \______/       v                                    v
+       BOTTOM OF PIECE
+
+    NibRowBorderPhase = 15 degrees * RowNum
+    NibRowBorderWave : y = sin(NibRowBorderPhase + x * 2 pi /
+    	BorderWavelength) * BorderAmplitude + NibRowTop + BorderAmplitude
+    SideBorderPhase = 15 degrees * SideNum
+    Drawing a side:
+    SideCenterX = PieceLeft + SlantyBoxWidth / 2
+    SideCenterY = PieceTop + SlantyBoxHeight / 2
+    SideBorderPhase = 15 degrees * SideNum
+    SideBorderWave : 
+	x = sin(SideBorderPhase + (y - SideCenterY) * 2 pi / BorderWavelength)
+	    * BorderAmplitude + tan(SlantyAngle) * (y - SideCenterY)
+	    - SideCenterX
+    
+    

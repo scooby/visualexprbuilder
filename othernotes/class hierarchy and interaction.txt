@@ -1,0 +1,47 @@
+Elements on the screen:
+(from back to front)
+MathExpression
+    PieceGroups
+        PieceAreas
+        PieceStrokes
+        PieceLabels
+    PieceCollection
+        PGs
+        Scrollbar
+        FilterLabel
+    InputField
+
+UI Classes
+    PieceCanvas
+    PieceListener
+    PieceDragSource
+    PieceDropTarget
+    PieceDragGestureRecognizer
+    
+Swing classes:
+    http://java.sun.com/javase/6/docs/api/java/awt/dnd/DropTarget.html
+    http://www.javaworld.com/javaworld/jw-03-1999/jw-03-dragndrop.html
+    http://java.sun.com/javase/6/docs/api/java/awt/dnd/MouseDragGestureRecognizer.html
+    
+Canvas area
+-----------
+We have a list of objects in the canvas.
+
+The Java2D method is to not worry about doing this efficiently. Just double-
+buffer everything and draw it all at once.
+
+We need to know:
+    - If something changes, what needs to be redrawn.
+    - What the mouse is pointing at.
+
+A piece's shape depends on:
+    The size of its label
+    The size of the decoration
+    The size of pieces that fit into it.
+
+What we need to maintain:
+    - Current graphic state
+    - Anmated state changes
+    
+
+
