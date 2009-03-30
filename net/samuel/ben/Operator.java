@@ -21,12 +21,15 @@
 package net.samuel.ben;
 import java.lang.reflect.InvocationTargetException;
 
-class Operator implements Node {
-    public String getName();
-    public Class<?> returnType();
-    public Class<?> getArgType(int arg);
-    public void reset();
-    public boolean setArg(int arg, Object val);
-    public boolean evalLeftToRight();
-    public Object getReturn() throws InvocationTargetException;
+abstract class Operator implements Node {
+    public List<? extends Node> getIns();
+    public Node getOut();
+    public bool canAddIns(); // Should this node have an input adder
+    public void addIn(Node n);
+    public void setIn(int i, Node n);
+    public void setOut(Node n);
+    public NodeStyle getStyle() {
+	return squiggly_sides;
+    }
+    public String getLabel();
 }

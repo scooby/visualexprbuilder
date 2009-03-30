@@ -19,37 +19,105 @@
  */
 
 package net.samuel.ben;
-import java.awt.geom.Dimension2D;
+import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
+/**
+ * Conventions are based on left-to-right:
+ *           INPUTS (siblings)        ^
+ *      senior   --->     junior      | children /
+ *  ____     ____     ____      ____  | descendants
+ * |    \___/    \___/    \____/    | 
+ * |                                | 
+ * |                                | 
+ * |                                | |
+ * |_____________     ______________| | parents /
+ *               \___/                v ancestors
+ *               OUTPUT
+ */
+
 abstract public class ExpressionUI extends javax.swing.plaf.ComponentUI {
-    public enum NodeStyle {
-	squiggly_sides, straight_sides, pointy_sides, semicircle_top, semicircle_bottom
-    }
-    // This should be small, 2 or 3 pixels. Note the actual border width is
-    // twice this.
-    abstract public float squigglyAmplitude();
-    // The squiggles aren't actually a sine wave, but somewhat close to.
-    abstract public float squigglyWavelength();
+    /**
+     * The squiggles are roughly a sine wave, and that's what the amplitude
+     * describes.
+     * This should be small, 2 or 3 pixels. Note the actual border width is
+     * twice this plus the size of the border stroke pen.
+     */
+    abstract public double squigglyAmplitude();
+    /**
+     * The squiggles are roughly a sine wave, and that's what the wavelength
+     * describes.
+     */
+    abstract public double squigglyWavelength();
+    /**
+     * This can be any pen. The pen must have a well defined size to be able
+     * to calculate the actual thickness of the border.
+     */
     abstract public Stroke borderStroke();
-    // Pointy sides are essentially the same as a less-than or greater-than
-    // sign. This is the interior angle used to determine the width of the
-    // sides column, i.e. width = (height / 2) / sin(pointyAngle / 2)
-    abstract public float pointyAngle();
+    /**
+     * Pointy sides are essentially the same as a less-than or greater-than
+     * sign. This is the interior angle used to determine the width of the
+     * sides column, i.e. width = (height / 2) / tan(pointyAngle / 2)
+     * The return value should be in radians.
+     */
+    abstract public double pointyAngle();
+    /**
+     * Space between different borders.
+     */
+    abstract public double heteroborderSpace();
+    /**
+     * Paint for border strokes
+     */
     abstract public Paint borderPaint();
+    /**
+     * Paint for piece areas
+     */
     abstract public Paint areaPaint(Node n);
-    // At some point, it would be nice to make this extensible, but it's 
-    // hard to allow for entirely new ways of drawing stuff
-    public NodeStyle getStyle(Node n) {
-	if(n instanceof Operator)
-	    return squiggly_sides;
-	if(n instanceof Literal)
-	    return straight_sides;
-	if(n instanceof Capture || n instanceof Recall)
-	    return pointy_sides;
-	if(n instanceof UnsetArg)
-	    return semicircle_top;
-	if(n instanceof UnusedReturn)
-	    return semicircle_bottom;
-    }
+    /**
+     * Bounding box for content drawn on a Graphics2D object
+     * Includes padding, and for arc-based nodes
+     *   includes space for arc.
+     * Does *not* include space for borders or nibs.
+     */
+    abstract public Rectangle2D contentArea(Graphics2D g, Node n);
+    /**
+     * thickness of the border with the senior sibling
+     * this is west border width in a LTR UI
+     */
+    abstract public double seniorBorderSize(Graphics2D g, Node n, Rectangle2D content);
+    /**
+     * thickness of the border with the junior sibling
+     * this is east border width in a LTR UI
+     */
+    abstract public double juniorBorderSize(Graphics2D g, Node n, Rectangle2D content);
+    /**
+     * thickness of the border with the children
+     * this is the north border height in a LTR UI
+     */
+    abstract public double childrenBorderSize(Graphics2D g, Node n, Rectangle2D content);
+    /**
+     * distance the children nib descends (node's concave nib)
+     * this is the height of the north descender area in a LTR UI
+     */
+    abstract public double childrenNibDescent();
+    /**
+     * width of the children nib (node's concave nib)
+     * this is the width of the descender itself in a LTR UI
+     */
+    abstract public double childrenNibExtent();
+    /**
+     * thickness of the border with the parent
+     * this is the south border height in a LTR UI
+     */
+    abstract public double parentBorderSize(Graphics2D g, Node n, Rectangle2D content);
+    /**
+     * distance the parent nib descends (node's convex nib)
+     * this is the height of the north descender area in a LTR UI
+     */
+    abstract public double parentNibDescent();
+    /**
+     * width of the parent nib (node's convex nib)
+     * this is the width of the descender itself in a LTR UI
+     */
+    abstract public double parentNibExtent();
 }

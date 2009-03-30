@@ -27,10 +27,7 @@ import com.mallardsoft.tuple.*;
  * Columns alternate side column and content column.
  
  * Like columns may be collapsed.
-    content squiggly squiggly content -> content squiggly content
- 
- * Unlike columns require a spacer.
-    content squiggly angle content -> content squiggly spacer angle content
+    content squiggly squiggly content -> content squiggly content 
  */
  
 public class Group {
@@ -41,83 +38,87 @@ public class Group {
 	eui = _ebc.getUI();
     }
     
-    private HashMap<Pair<int, int>, Piece> gmap;
-    private IdentityHashMap<Node, Pair<int, int>> nmap;
-    
-    private void build_grid(Node _n) {
+    /**
+     * Set up the grid of nodes
+     */
+    private void build_grid(Node n) {
+	LinkedList<Node> queue;
+	queue.offer(n);
+	ninf.put(n, new NodeInfo(n, 0, 0));
+	ArrayList<Node> all;
+	int maxrow = 0;
+	// Do node-widths, row numbers, and parent / older sibling links	
+	while(!queue.isEmpty()) {
+	    Node n = queue.remove();
+	    NodeInfo ni = ninf.get(n);
+	    int o = 0;
+	    NodeInfo os = null;
+	    for(Node x : n.getIns()) {
+		queue.offer(x);
+		os = ninf.put(x, new NodeInfo(x, ni.row + 1, o++, ni, os));
+	    }
+	    if(o == 0)
+		n.nwidth = 1; // By default it is 0, and it gets set later...
+	    else
+		maxrow = Math.max(maxrow, ni.row + 1);
 
-	// Set up the grid of nodes
+	    all.add(n);
+	}
+	gmap = new ArrayList<SortedMap<int, NodeInfo>>(maxrow + 1);
+	for(int i = maxrow + 1; i > 0; i--)
+	    gmap.add(new SortedMap<int, NodeInfo>());
+	// Iterate backwards to hit the leaves first.
+	// This makes leaves tell parents how wide they need to be.
+	ListIterator<Node> li = all.list_iterator(all.size());
+	while(li.hasPrevious()) {
+	    Node x = li.previous();
+	    Node px = x.getOut();
+	    if(px != null)
+		ninf.get(px).nwidth += ninf.get(x).nwidth;
+	}
+	// Iterate forwards as a node's column is older sibling + nwidth
+	li = all.list_iterator(0);
+	while(li.hasNext()) {
+	    Node x = li.next();
+	    NodeInfo ni = ninf.get(x);
+	    if(ni.off == 0)
+		ni.col = 0;
+	    else {
+		ni.col = ni.old_sib.col + ni.old_sib.nwidth;
+	    }
+	    gmap.get(ni.row).put(ni.col, ni);
+	}
 	
-	LinkedList<Node> q;
-	q.offer(_n);
-	
-	while(!q.isEmpty()) {
-	    Node n = q.remove();
-	    
-	    int r = t.second + 1; int c = t.third;
-	    if(t.hasInputs()) {
-		for(Pair<Class<?>, Node> x : t.first.getIns()) {
-		    q.offer(new Triple(n, r, c++));
-		}
-
-	// Add the pieces in
-	
-	// Collapse sides or add spacers
 	// Figure out sizes
-	// 
+	
     }
-    private SortedMap<float, int> cols;
-    private SortedMap<float, int> rows;
+    private SortedMap<double, int> cols;
+    private SortedMap<double, int> rows;
     private ArrayList<Node> memberNodes;
     private Shape area;
     private Shape lines;
     
-    private class Piece {
-	public enum Part {
-	    north_part, east_part, south_part, west_part, center_part
+    private ArrayList<SortedMap<int, NodeInfo>> gmap;
+    private IdentityHashMap<Node, NodeInfo> ninf;
+    private class NodeInfo {
+	public NodeInfo(Node n, int r, int o, NodeInfo p, NodeInfo os) { 
+	    node = n; 
+	    row = r; 
+	    off = o;
+	    parent = p;
+	    old_sib = os;
+	    nwidth = 0;
 	}
-	Piece(Node _n, Part _p) {
-	    n = _n; p = _p;
-	}
-	public void calc_dims() {
-	    switch(ns) {
-	    case squiggly_sides:
-		left.d = right.d = squiggly_side;
-		top.d = bot.d = squiggly_row;
-		content.d = label_area;
-		break;
-	    case straight_sides:
-		left.d = right.d = straight_side;
-		top.d = n.hasInputs() ? squiggly_row : straight_row;
-		bot.d = squiggly_row;
-		content.d = label_area;
-		break;
-	    case pointy_sides:
-		left.d = pointy_left_side;
-		right.d = pointy_right_side;
-		top.d = n.hasInputs() ? squiggly_row : straight_row;
-		bot.d = squiggly_row;
-		content.d = label_area;
-		break;
-	    case semicircle_top:
-		left.d = right.d = top.d = empty;
-		bot.d = squiggly_row;
-		content.d = semicircle_top;
-		break;
-	    case semicircle_bottom:
-		left.d = right.d = bot.d = empty;
-		top.d = squiggly_row;
-		content.d = semicircle_bottom;
-		break;
-	    default:
-		throw new RuntimeException("What?!");
-	    }
-	}
-	public float w;
-	public float h;
-	public Node n;
-	public int r;
-	public int c;
-	public Part p;
+	public Node node;
+	public NodeInfo parent;
+	public NodeInfo old_sib;
+	public int row;
+	public int col;
+	public int off;
+	public int nwidth;
+	public double width;
+	public double height;
+	public boolean collapse_older;
+	public boolean collapse_parent;
     }
 }

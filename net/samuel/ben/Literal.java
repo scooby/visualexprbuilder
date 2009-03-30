@@ -21,6 +21,8 @@
 package net.samuel.ben;
 
 abstract class Literal implements Node {
-
+    public NodeStyle getStyle() {
+	return straight_sides;
+    }
 }
 

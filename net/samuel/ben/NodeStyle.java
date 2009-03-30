@@ -20,14 +20,10 @@
 
 package net.samuel.ben;
 
-// Represents an object managed by the ExpressionComponent
-interface Node {
-    public List<? extends Node> getIns();
-    public Node getOut();
-    public bool canAddIns(); // Should this node have an input adder
-    public void addIn(Node n);
-    public void setIn(int i, Node n);
-    public void setOut(Node n);
-    public NodeStyle getStyle();
-    public String getLabel();
+public enum NodeStyle {
+    squiggly_sides, 
+    straight_sides, 
+    pointy_sides, 
+    semicircle_top, 
+    semicircle_bottom
 }

@@ -30,9 +30,50 @@ class Piece {
 	squiggly_side, squiggly_row, straight_side, straight_row,
 	pointy_left_side, pointy_right_side, corner, empty
     }
-    
-    public Node n;
-    public int r;
-    public int c;
-    public Draw d;
+    Piece(Node _n, Group _g) {
+	n = _n; p = _p;
+    }
+    public void calc_dims() {
+	switch(ns) {
+	case squiggly_sides:
+	    left.d = right.d = squiggly_side;
+	    top.d = bot.d = squiggly_row;
+	    content.d = label_area;
+	    break;
+	case straight_sides:
+	    left.d = right.d = straight_side;
+	    top.d = n.hasInputs() ? squiggly_row : straight_row;
+	    bot.d = squiggly_row;
+	    content.d = label_area;
+	    break;
+	case pointy_sides:
+	    left.d = pointy_left_side;
+	    right.d = pointy_right_side;
+	    top.d = n.hasInputs() ? squiggly_row : straight_row;
+	    bot.d = squiggly_row;
+	    content.d = label_area;
+	    break;
+	case semicircle_top:
+	    left.d = right.d = top.d = empty;
+	    bot.d = squiggly_row;
+	    content.d = semicircle_top;
+	    break;
+	case semicircle_bottom:
+	    left.d = right.d = bot.d = empty;
+	    top.d = squiggly_row;
+	    content.d = semicircle_bottom;
+	    break;
+	default:
+	    throw new RuntimeException("What?!");
+	}
+    }
+    public Piece left() {
+    }
+    public Piece right() {
+    }
+    private float w;
+    private float h;
+    private Node n;
+    private Group g;
+    private Part p;
 }
