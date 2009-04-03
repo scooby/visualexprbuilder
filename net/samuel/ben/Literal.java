@@ -21,8 +21,16 @@
 package net.samuel.ben;
 
 abstract class Literal implements Node {
+    abstract public List<? extends Node> getIns();
+    abstract public Node getOut();
+    abstract public String getLabel();
+    abstract public Object getValue();
+    abstract public Class<?> getType();
+    abstract public bool canAddIns(); // Should this node have an input adder
+    abstract public void addIn(Node n);
+    abstract public void setIn(int i, Node n);
+    abstract public void setOut(Node n);
     public NodeStyle getStyle() {
 	return straight_sides;
     }
 }
-

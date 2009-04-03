@@ -16,35 +16,45 @@
     You should have received a copy of the GNU General Public License along
     with VisualExpressionBuilder, in the file COPYING in the root directory of
     the distribution. If not, see <http://www.gnu.org/licenses/>.
- */
+*/
 
 package net.samuel.ben;
+import java.awt.Graphics2D;
 
-import com.mallardsoft.tuple.*;
 /** A piecegroup has many pieces in a tree organization.
  * All pieces are assembled into a single unit.
  * Rows alternate border row (which includes the nib descender), content row
  * Columns alternate side column and content column.
- 
+ *
  * Like columns may be collapsed.
-    content squiggly squiggly content -> content squiggly content 
- */
+ *  content squiggly squiggly content -> content squiggly content 
+**/
  
 public class Group {
     private ExpressionUI eui;
     private ExprBuildComponent ebc;
+    private double nibDescent;
+    private double nibExtent;
+    private double nibSpacing;
     public Group(ExprBuildComponent _ebc) {
 	ebc = _ebc;
 	eui = _ebc.getUI();
+	nibDescent = eui.nibDescent();
+	nibExtent = eui.nibExtent();
+	nibSpacing = eui.nibSpacing();
     }
     
     /**
      * Set up the grid of nodes
-     */
-    private void build_grid(Node n) {
+    **/
+    private void build_grid(Node root) {
+	// Make sure it's really the root. The root is often an
+	// UnusedReturn.
+	while(root.getOut() != null)
+	    root = root.getOut();
 	LinkedList<Node> queue;
-	queue.offer(n);
-	ninf.put(n, new NodeInfo(n, 0, 0));
+	queue.offer(root);
+	ninf.put(root, new NodeInfo(root, 0, 0));
 	ArrayList<Node> all;
 	int maxrow = 0;
 	// Do node-widths, row numbers, and parent / older sibling links	
@@ -53,9 +63,10 @@ public class Group {
 	    NodeInfo ni = ninf.get(n);
 	    int o = 0;
 	    NodeInfo os = null;
-	    for(Node x : n.getIns()) {
-		queue.offer(x);
-		os = ninf.put(x, new NodeInfo(x, ni.row + 1, o++, ni, os));
+	    for(Node child : n.getIns()) {
+		queue.offer(child);
+		os = ninf.put(child, 
+		    new NodeInfo(child, ni.row + 1, o++, ni, os));
 	    }
 	    if(o == 0)
 		n.nwidth = 1; // By default it is 0, and it gets set later...
@@ -75,18 +86,19 @@ public class Group {
 	    Node px = x.getOut();
 	    if(px != null)
 		ninf.get(px).nwidth += ninf.get(x).nwidth;
+	    
 	}
 	// Iterate forwards as a node's column is older sibling + nwidth
 	li = all.list_iterator(0);
 	while(li.hasNext()) {
 	    Node x = li.next();
-	    NodeInfo ni = ninf.get(x);
-	    if(ni.off == 0)
-		ni.col = 0;
-	    else {
-		ni.col = ni.old_sib.col + ni.old_sib.nwidth;
-	    }
-	    gmap.get(ni.row).put(ni.col, ni);
+	    NodeInfo xi = ninf.get(x);
+	    if(xi.off == 0)
+		xi.col = 0;
+	    else
+		xi.col = xi.old_sib.col + xi.old_sib.nwidth;
+	    gmap.get(xi.row).put(xi.col, xi);
+	    
 	}
 	
 	// Figure out sizes
@@ -118,6 +130,10 @@ public class Group {
 	public int nwidth;
 	public double width;
 	public double height;
+	public double ch_bdr;
+	public double pr_bdr;
+	public double sr_bdr;
+	public double jr_bdr;
 	public boolean collapse_older;
 	public boolean collapse_parent;
     }

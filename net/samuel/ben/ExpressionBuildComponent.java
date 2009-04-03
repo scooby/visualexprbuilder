@@ -16,20 +16,10 @@
     You should have received a copy of the GNU General Public License along
     with VisualExpressionBuilder, in the file COPYING in the root directory of
     the distribution. If not, see <http://www.gnu.org/licenses/>.
- */
+**/
 
 package net.samuel.ben;
+import java.awt.Graphics2D;
 
-// Represents an object managed by the ExpressionComponent
-interface Node {
-    public List<? extends Node> getIns();
-    public Node getOut();
-    public Class<?> getType();
-    public Object getValue();
-    public String getLabel();
-    public bool canAddIns(); // Should this node have an input adder
-    public void addIn(Node n);
-    public void setIn(int i, Node n);
-    public void setOut(Node n);
-    public NodeStyle getStyle();
-}
+public class ExprBuildComponent extends javax.swing.JComponent {
+    

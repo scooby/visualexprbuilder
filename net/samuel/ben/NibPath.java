@@ -24,17 +24,13 @@ import java.awt.geom.PathIterator;
 public class NibPath implements PathIterator {
     double x, y, w, h;
     double c1x, c1y, c2x, c2y, px, py;
-    ExpressionUI ui;
     int index;
     int bits;
-    public NibPath(double _x, double _y, double _w, double _h, Class<?> c, ExpressionUI _ui, boolean moveTo) {
-	if(_ui == null)
-	    throw new NullPointerException();
+    public NibPath(double _x, double _y, double _w, double _h, Class<?> c) {
 	x = _x; y = _y;
 	w = _w; h = _h;
-	ui = _ui;
 	bits = c.hashCode();
-	index = moveTo ? 1 : 2;
+	index = 2; // moveTo ? 1 : 2;
 	setSeg();
     }
     public int getWindingRule() {
@@ -145,7 +141,7 @@ public class NibPath implements PathIterator {
 	coords[3] = c2y;
 	coords[4] = px;
 	coords[5] = py;
-	return index == 1 ? PathIterator.MOVE_TO : index == 2 || index == 7 ? PathIterator.QUAD_TO : PathIterator.CUBIC_TO;
+	return index == 1 ? PathIterator.SEG_MOVETO : index == 2 || index == 7 ? PathIterator.SEG_QUADTO : PathIterator.SEG_CUBICTO;
     }
     public int currentSegment(float[] coords) {
 	coords[0] = (float) c1x;
@@ -154,7 +150,7 @@ public class NibPath implements PathIterator {
 	coords[3] = (float) c2y;
 	coords[4] = (float) px;
 	coords[5] = (float) py;
-	return index == 1 ? PathIterator.MOVE_TO : index == 2 || index == 7 ? PathIterator.QUAD_TO : PathIterator.CUBIC_TO;
+	return index == 1 ? PathIterator.SEG_MOVETO : index == 2 || index == 7 ? PathIterator.SEG_QUADTO : PathIterator.SEG_CUBICTO;
     }
     public boolean isDone() {
 	return index > 7;

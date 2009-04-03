@@ -20,6 +20,7 @@
 
 package net.samuel.ben;
 import java.awt.geom.PathIterator;
+import java.util.Iterator;
 /**
  * Given an Iterable of PathIterators, this class will glom them all
  * together to return one large path.
@@ -28,9 +29,9 @@ import java.awt.geom.PathIterator;
  * PathIterator contract doesn't say anything about that.
  */
 public class CompoundPath implements PathIterator {
-    private Iterator<? implements PathIterator> pii;
+    private Iterator<? extends PathIterator> pii;
     PathIterator pi;
-    public CompoundPath(Iterable<? implements PathIterator> pathCollection) {
+    public CompoundPath(Iterable<? extends PathIterator> pathCollection) {
 	pii = pathCollection.iterator();
 	pi = null;
     }

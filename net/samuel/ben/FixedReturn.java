@@ -20,16 +20,9 @@
 
 package net.samuel.ben;
 
-// Represents an object managed by the ExpressionComponent
-interface Node {
-    public List<? extends Node> getIns();
-    public Node getOut();
-    public Class<?> getType();
-    public Object getValue();
-    public String getLabel();
-    public bool canAddIns(); // Should this node have an input adder
-    public void addIn(Node n);
-    public void setIn(int i, Node n);
-    public void setOut(Node n);
-    public NodeStyle getStyle();
+abstract class FixedReturn implements Node {
+    public NodeStyle getStyle() {
+	return straight_sides;
+    }
 }
+

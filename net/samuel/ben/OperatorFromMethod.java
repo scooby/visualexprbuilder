@@ -25,56 +25,61 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class OperatorFromMethod implements Operator {
-    private Method _m;
-    private ArrayList<Object> paramValues;
-    private ArrayList<Class<?>> paramTypes;
-    private int paramsSet;
-    private Operator init(Method __m) {
-	_m = __m;
-	paramTypes.clear();
-	if(Modifier.isStatic(_m.getModifiers())) {
-	    paramTypes.add(_m.getDeclaringClass());
+public class OperatorFromMethod extends Operator {
+    protected Method m;
+    protected ArrayList<Class<?>> paramTypes;
+    protected ArrayList<Node> params;
+    public Operator(Method _m) {
+	if(_m == null)
+	    throw new NullPointerException();
+	super();
+	m = _m;
+	Class<?>[] ca = m.getParameterTypes();
+	if(isStatic()) {
+	    paramTypes = new ArrayList<Class<?>>(Arrays.asList(ca));
+	} else {
+	    paramTypes = new ArrayList<Class<?>>(ca.length() + 1);
+	    paramTypes.add(m.getDeclaringClass());
+	    paramTypes.addAll(Arrays.asList(ca));
 	}
-	paramTypes.addAll(paramTypes.size(),
-	    Arrays.asList(_m.getParameterTypes()));
-	reset();
-	return this;
-    }
-    public String getName() { return _m.toString(); }
-    public Class<?> returnType() { return _m.getReturnType(); }
-    public Class<?> getArgType(int arg) {
-	return paramTypes.get(arg);
-    }
-    public void reset() {
-	paramValues.clear();
-	for(int i = paramTypes.size(); i > 0; --i) {
-	    paramValues.add(null);
+	params = new ArrayList<Node>(paramTypes.size());
+	for(Class<?> c : paramTypes) {
+	    params.add(new UnsetArg(this, c));
 	}
-	paramsSet = 0;
     }
-    public boolean setArg(int arg, Object val) {
+    protected boolean isStatic() { 
+	return Modifier.isStatic(m.getModifiers()); 
+    }
+    public String getLabel() { return toString(); }
+    public Class<?> getType() { return m.getReturnType(); }
+    public List<? extends Node> getIns() { 
+	return Collections.unmodifiableList(params);
+    }
+    public void setIn(int arg, Node n) {
 	if(arg < 0 || arg >= maxArgs())
-	    throw new IndexOutOfBoundsException();
-	if(arg < minArgs() && ((paramValues.get(arg) == null)
-	    ^ (val == null))) 
-	{
-	    paramsSet += val == null ? -1 : 1;
-	}
-	paramValues.set(arg, val);
-	return paramsSet == minArgs();
+	    throw new IndexOutOfBoundsException("arg " + arg + " of " + this.toString());
+	if(n == null)
+	    n = new UnsetArg(this, paramTypes.get(arg));
+	if(paramTypes.get(arg).isAssignableFrom(n.getType()))
+	    params.set(arg, n);
+	else
+	    throw new ClassCastException("arg " + arg + " of " + this.toString());
     }
-    public boolean evalLeftToRight() { return false; }
-    public Object getReturn() throws InvocationTargetException {
+    public Object getValue() {
+	ArrayList<Object> values = new ArrayList<Object>(paramTypes.size());
+	for(int i = 0; i < paramTypes.size(); ++i)
+	    values.set(i, params.get(i).getValue());
 	try {
-	    return _m.invoke(paramValues.get(0),
-		paramValues.subList(1,
-		    paramValues.size()).toArray());
-	} catch(IllegalAccessException e) {
-	    // This shouldn't happen since paramValues
-	    // always has arg 0.
-	    throw new RuntimeException(e);
+	    if(isStatic())
+		return m.invoke(null,
+		    values.toArray());
+	    else
+		return m.invoke(values.get(0),
+		    values.subList(1,
+		    values.size()).toArray());
+	} catch(Throwable t) {
+	    return t;
 	}
     }
-    public String toString() { return _m.toGenericString(); }
+    public String toString() { return m.toGenericString(); }
 }

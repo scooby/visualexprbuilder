@@ -22,14 +22,16 @@ package net.samuel.ben;
 import java.lang.reflect.InvocationTargetException;
 
 abstract class Operator implements Node {
-    public List<? extends Node> getIns();
-    public Node getOut();
-    public bool canAddIns(); // Should this node have an input adder
-    public void addIn(Node n);
-    public void setIn(int i, Node n);
-    public void setOut(Node n);
+    abstract public List<? extends Node> getIns();
+    abstract public Node getOut();
+    abstract public Class<?> getType();
+    abstract public Object getValue();
+    abstract public String getLabel();
     public NodeStyle getStyle() {
 	return squiggly_sides;
     }
-    public String getLabel();
+    abstract public bool canAddIns(); // Should this node have an input adder
+    abstract public void addIn(Node n);
+    abstract public void setIn(int i, Node n);
+    abstract public void setOut(Node n);
 }

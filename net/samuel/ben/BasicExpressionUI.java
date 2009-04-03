@@ -16,7 +16,7 @@
     You should have received a copy of the GNU General Public License along
     with VisualExpressionBuilder, in the file COPYING in the root directory of
     the distribution. If not, see <http://www.gnu.org/licenses/>.
- */
+**/
 
 package net.samuel.ben;
 import java.awt.Stroke;
@@ -29,18 +29,6 @@ import java.awt.geom.Rectangle2D;
 
 public class BasicExpressionUI extends ExpressionUI {
     public BasicExpressionUI() { }
-    // This should be small, 2 or 3 pixels. Note the actual border width is
-    // twice this.
-    public double squigglyAmplitude() { return 2.0; }
-    // The squiggles are a rough approximation of a sine wave
-    public double squigglyWavelength() { return 32.0; }
-    /**
-     * Pointy sides are essentially the same as a less-than or greater-than
-     * sign. This is the interior angle used to determine the width of the
-     * sides column, i.e. width = (height / 2) / tan(pointyAngle / 2)
-     * The return value should be in radians.
-     */
-    public double pointyAngle() { return Math.toRadians(160); }
     public Stroke borderStroke() { return _stroke; }
     public double heteroborderSpace() { return 3.0; }
     public Paint borderPaint() { return Color.black; }
@@ -54,7 +42,7 @@ public class BasicExpressionUI extends ExpressionUI {
      * Includes padding, and for arc-based nodes
      *   includes space for arc.
      * Does *not* include space for borders or nibs.
-     */
+    **/
     public Rectangle2D contentArea(Graphics2D g, Node n) {
 	NodeStyle ns = n.getStyle();
 	Rectangle2D r = labelFont.getStringBounds(n.getLabel(), g.getFontRenderContext());
@@ -73,7 +61,7 @@ public class BasicExpressionUI extends ExpressionUI {
 	    stretched square will still fit.
 	    Our semiellipse is just half of an ellipse, but our rectangle is
 	    also just half of a larger rectangle so we don't need to do
-	    anything about that. */
+	    anything about that.**/
 	    w *= Math.sqrt(2.0);
 	    h *= Math.sqrt(2.0);
 	}
@@ -104,7 +92,7 @@ public class BasicExpressionUI extends ExpressionUI {
     /**
      * thickness of the border with the junior sibling
      * this is east border width in a LTR UI
-     */
+    **/
     public double juniorBorderSize(Graphics2D g, Node n, Rectangle2D content)
     {
 	return seniorBorderSize(g, n, content);
@@ -112,7 +100,7 @@ public class BasicExpressionUI extends ExpressionUI {
     /**
      * thickness of the border with the children
      * this is the north border height in a LTR UI
-     */
+    **/
     public double childrenBorderSize(Graphics2D g, Node n, 
 	Rectangle2D content)
     {
@@ -134,15 +122,15 @@ public class BasicExpressionUI extends ExpressionUI {
     /**
      * thickness of the border with the parent
      * this is the south border height in a LTR UI
-     */
+    **/
     public double parentBorderSize(Graphics2D g, Node n, Rectangle2D content)
     {
 	switch(n.getStyle()) {
-	case straight_sides:
 	case squiggly_sides:
 	case semicircle_top:
 	    return 2.0 * squigglyAmplitude() + _stroke.getLineWidth();
 	    return _stroke.getLineWidth();
+	case straight_sides:
 	case pointy_sides:
 	    // Check if this is a capture or a recall
 	    return n.getIns().isEmpty() ? _stroke.getLineWidth() :
@@ -151,33 +139,40 @@ public class BasicExpressionUI extends ExpressionUI {
 	    return 0.0;
 	}
      }
-	 
     /**
-     * distance the children nib descends (node's concave nib)
+     * distance the nib descends
      * this is the height of the north descender area in a LTR UI
-     */
-    public double childrenNibDescent() {
+    **/
+    public double nibDescent() {
 	return 12.0;
     }
     /**
-     * width of the children nib (node's concave nib)
+     * width of the nib
      * this is the width of the descender itself in a LTR UI
-     */
-    public double childrenNibExtent() {
+    **/
+    public double nibExtent() {
 	return 8.0;
     }
     /**
-     * distance the parent nib descends (node's convex nib)
-     * this is the height of the north descender area in a LTR UI
-     */
-    public double parentNibDescent() {
-	return 12.0;
+     * minimal spacing between nibs
+     * This will probably never matter because a node with any text will be
+     * wider than the nib extent.
+     * This is padding around the nib. Between two nibs, there will be >= this
+     * value * 2, between a nib and a corner, there will be >= this value.
+    **/
+    public double nibSpacing() {
+	return 2.0;
     }
+    // This should be small, 2 or 3 pixels. Note the actual border width is
+    // twice this.
+    public double squigglyAmplitude() { return 2.0; }
+    // The squiggles are a rough approximation of a sine wave
+    public double squigglyWavelength() { return 32.0; }
     /**
-     * width of the parent nib (node's convex nib)
-     * this is the width of the descender itself in a LTR UI
-     */
-    public double parentNibExtent() {
-	return 8.0;
-    }
+     * Pointy sides are essentially the same as a less-than or greater-than
+     * sign. This is the interior angle used to determine the width of the
+     * sides column, i.e. width = (height / 2) / tan(pointyAngle / 2)
+     * The return value should be in radians.
+    **/
+    public double pointyAngle() { return Math.toRadians(160); }
 }

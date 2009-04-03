@@ -96,28 +96,26 @@ abstract public class ExpressionUI extends javax.swing.plaf.ComponentUI {
      */
     abstract public double childrenBorderSize(Graphics2D g, Node n, Rectangle2D content);
     /**
-     * distance the children nib descends (node's concave nib)
-     * this is the height of the north descender area in a LTR UI
-     */
-    abstract public double childrenNibDescent();
-    /**
-     * width of the children nib (node's concave nib)
-     * this is the width of the descender itself in a LTR UI
-     */
-    abstract public double childrenNibExtent();
-    /**
      * thickness of the border with the parent
      * this is the south border height in a LTR UI
      */
     abstract public double parentBorderSize(Graphics2D g, Node n, Rectangle2D content);
     /**
-     * distance the parent nib descends (node's convex nib)
+     * distance the nib descends into the content area
      * this is the height of the north descender area in a LTR UI
      */
-    abstract public double parentNibDescent();
+    abstract public double nibDescent();
     /**
-     * width of the parent nib (node's convex nib)
+     * width of the nib
      * this is the width of the descender itself in a LTR UI
      */
-    abstract public double parentNibExtent();
+    abstract public double nibExtent();
+    /**
+     * minimal spacing between nibs
+     * This will probably never matter because a node with any text will be
+     * wider than the nib extent.
+     * This is padding around the nib. Between two nibs, there will be >= this
+     * value * 2, between a nib and a corner, there will be >= this value.
+    **/
+    abstract public double nibSpacing();
 }

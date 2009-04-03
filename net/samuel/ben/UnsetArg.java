@@ -19,6 +19,20 @@
  */
 
 package net.samuel.ben;
+import java.util.Collections;
 
-class UnsetArg implements Node {
+public class UnsetArg implements Node {
+    protected Class<?> t;
+    protected Node o;
+    public UnsetArg(Node node, Class<?> type) { t = type; o = node; }
+    public List<? extends Node> getIns() { return Collections.emptyList(); }
+    public Node getOut()                 { return o; }
+    public Class<?> getType()            { return t; }
+    public Object getValue()             { return null; }
+    public boolean canAddIns()           { return false; }
+    public void addIn(Node n)            { throw new RuntimeException(); }
+    public void setIn(int i, Node n)     { throw new RuntimeException(); }
+    public void setOut(Node n)           { o = n; }
+    public NodeStyle getStyle()          { return semicircle_top; }
+    public String getLabel()             { return t.getSimpleName(); }
 }

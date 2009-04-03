@@ -20,31 +20,26 @@
 
 package net.samuel.ben;
 import java.awt.geom.PathIterator;
+import java.awt.geom.Point2D;
 
 public class SquigglyPath implements PathIterator {
-    double x, y, l, p, wl, a, off, last_off;
-    float m;
-    boolean h;
-    ExpressionUI ui;
+    double x, y, l, p, wl, a, off, last_off, xm, ym;
     int segment;
-    public SquigglyPath(double _x, double _y, boolean horizontal, 
-	double length, double phase, ExpressionUI _ui, boolean moveto) {
-	if(_ui == null)
-	    throw new NullPointerException();
+    public SquigglyPath(Point2D from, Point2D to, double phase, 
+	double wavelength, double amplitude)
+    {
 	phase = phase < 0.0 ?  1.0 - phase : phase;
 	phase -= Math.floor(phase);
 	p = phase;
-	m = l < 0 ? -1.0 : 1.0;
-	l = Math.abs(l);
-	ui = _ui;
-	x = _x; y = _y;
-	wl = ui.squigglyWavelength();
-	a = ui.squigglyAmplitude();
+	l = from.distance(to);
+	x = from.getX(); y = from.getY();
+	xm = (to.getX() - from.getX()) / l;
+	ym = (to.getY() - from.getY()) / l;
+	wl = wavelength; a = amplitude;
 	last_off = 0.0;
 	off = 0.0;
 	update_off();
-	segment = moveto ? -1 : 0;
-	h = horizontal;
+	segment = 0; // moveto ? -1 : 0;
     }
     /** 
 	Handling phase and number of segments
@@ -95,7 +90,7 @@ public class SquigglyPath implements PathIterator {
 	if(segment == -1) {
 	    coords[0] = x;
 	    coords[1] = y;
-	    return PathIterator.MOVE_TO;
+	    return PathIterator.SEG_MOVETO;
 	}
 	
 	// Is this point above the centerline? The final point is on the
@@ -106,38 +101,44 @@ public class SquigglyPath implements PathIterator {
 	double last_up = last_off == 0.0 ? 0.0 : -up;
 	// Control points are halfway between points
 	double ctrl_off = (off + last_off) / 2.0;
+	// To get 90 degrees left from our main:
+	double xn = -ym;
+	double yn = xm;
 	// last point's second control point
-	coords[0] = x + (h ? m * ctrl_off : last_up);
-	coords[1] = y + (h ? last_up : m * ctrl_off);
-	coords[2] = x + (h ? m * ctrl_off : up);
-	coords[3] = y + (h ? up : m * ctrl_off);
-	coords[4] = x + (h ? m * off : up);
-	coords[5] = y + (h ? up : m * off);
-	return PathIterator.CUBIC_TO;
+	coords[0] = x + xm * ctrl_off + xn * last_up;	
+	coords[1] = y + ym * ctrl_off + yn * last_up;
+	coords[2] = x + xm * ctrl_off + xn * up;
+	coords[3] = y + ym * ctrl_off + yn * up;
+	coords[4] = x + xm * off + xn * up;
+	coords[5] = y + ym * off + yn * up;
+	return PathIterator.SEG_CUBICTO;
     }
     public int currentSegment(float[] coords) {
 	if(segment == -1) {
 	    coords[0] = (float) x;
 	    coords[1] = (float) y;
-	    return PathIterator.MOVE_TO;
+	    return PathIterator.SEG_MOVETO;
 	}
 	
 	// Is this point above the centerline? The final point is on the
 	// centerline.
-	float up = off == l ? 0.0 : (p < 0.5 ? (float) a : (float) -a);
+	float up = off == l ? 0.0f : ((float) p < 0.5f ? (float) a : (float) -a);
 	// Was the previous point above the centerline? Since we just negate
 	// up, we're really just checking for the first segment.
-	float last_up = last_off == 0.0 ? 0.0 : (float) -up;
+	float last_up = last_off == 0.0f ? 0.0f : (float) -up;
 	// Control points are halfway between points
-	float ctrl_off = (float) (off + last_off) / 2.0;
+	float ctrl_off = (float) (off + last_off) / 2.0f;
+	// To get 90 degrees left from our main:
+	float xn = (float) -ym;
+	float yn = (float) xm;
 	// last point's second control point
-	coords[0] = (float) x + (h ? m * ctrl_off : last_up);
-	coords[1] = (float) y + (h ? last_up : m * ctrl_off);
-	coords[2] = (float) x + (h ? m * ctrl_off : up);
-	coords[3] = (float) y + (h ? up : m * ctrl_off);
-	coords[4] = (float) x + (h ? m * off : up);
-	coords[5] = (float) y + (h ? up : m * off);
-	return PathIterator.CUBIC_TO;
+	coords[0] = (float) x + (float) xm * ctrl_off + xn * last_up;	
+	coords[1] = (float) y + (float) ym * ctrl_off + yn * last_up;
+	coords[2] = (float) x + (float) xm * ctrl_off + xn * up;
+	coords[3] = (float) y + (float) ym * ctrl_off + yn * up;
+	coords[4] = (float) x + (float) xm * (float) off + xn * up;
+	coords[5] = (float) y + (float) ym * (float) off + yn * up;
+	return PathIterator.SEG_CUBICTO;
     }
     public boolean isDone() {
 	return off >= l;
@@ -154,9 +155,12 @@ public class SquigglyPath implements PathIterator {
 	return PathIterator.WIND_NON_ZERO;
     }
     /**
-      * Use this value as the starting phase for another line.
+      * Calculate the starting phase after a length.
       */
-    public double phase() {
+    public static double nextPhase(double p, double wl, double l) {
+	p += Math.abs(l) / wl;
+	p = p < 0.0 ?  1.0 - p : p;
+	p -= Math.floor(p);
 	return p;
     }
 }
