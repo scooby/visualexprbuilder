@@ -19,144 +19,86 @@
  */
 
 package net.samuel.ben;
-import java.awt.geom.PathIterator;
+import java.awt.geom.Rectangle2D;
 
-public class NibPath implements PathIterator {
-    double x, y, w, h;
-    double c1x, c1y, c2x, c2y, px, py;
-    int index;
-    int bits;
-    public NibPath(double _x, double _y, double _w, double _h, Class<?> c) {
-	x = _x; y = _y;
-	w = _w; h = _h;
-	bits = c.hashCode();
-	index = 2; // moveTo ? 1 : 2;
-	setSeg();
+public class NibPath {
+    public static ReversiblePathFactory rpf(Rectangle2D r, int bits) 
+    {
+	return rpf(r.getX(), r.getY(), r.getWidth(), r.getHeight(), 
+	    bits);
     }
-    public int getWindingRule() {
-	return PathIterator.WIND_NON_ZERO;
-    }
-    /* A nib is roughly an hourglass shape with a rounded 
-    	bottom:
-    
-	 x------------------>x+w
-	y1     O       O     7
-	| •••  |       |  ••• 
-	|   •••|       |•••   
-	|      2       6      
-	|     •|       |•     
-	|  O • |       | • O  
-	|  | • O       O • |  
-	|  |•             •|  
-	|  3               5  
-	|  |••••       ••••|  
-	V  |   •••• ••••   |  
-      y+h  O  O----4----O  O  
-    
-    The control points are all just vertical, except for
-    control points on point 4 which are horizontal
-    Points 2, 3, 5 and 6 can be moved. Any control points
-    must be within the area to avoid twists.
-    
-    We can get nice nib variation by just moving points
-    within a square area. We have 32 bits for 4 points,
-    so 4 bits of variance per dimension per point..
-    
-    Point     Area
-    1         0.0, 0.0 : 0.0, 0.0
-    2         0.1, 0.1 : 0.4, 0.4
-     cp       0.0 -0.3   0.0 +0.3
-    3         0.0, 0.6 : 0.3, 0.9
-     cp       0.0 -0.3   0.0 +0.3
-    4         0.5, 1.0 : 0.5, 1.0
-     cp      -0.3  0.0  +0.3  0.0
-    5         0.7, 0.6 : 1.0, 0.9
-     cp       0.0 -0.3   0.0 +0.3
-    6         0.6, 0.1 : 0.9, 0.4
-     cp       0.0 -0.3   0.0 +0.3
-    7         1.0, 0.0 : 1.0, 0.0
-    */
-    private void setSeg() {
-	switch(index) {
-	case 1:
-	    c1x = px = x;
-	    c1y = py = y;
-	    return; // move to
-	case 2:
-	    px = c2x = x + w * (0.1 + 0.3 * (bits & 15) / 15.0);
-	    py = c2y = y + h * (0.1 + 0.3 * ((bits >> 4) & 15) / 15.0);
-	    c1x = px;
-	    c1y = Math.max(y, py - 0.3 * h);
-	    bits = bits >> 8;
-	    return; // quad to
-	case 3:
-	    c1x = px;
-	    c1y = Math.min(y + h, py + 0.3 * h);
-	    px = x + w * (0.0 + 0.3 * (bits & 15) / 15.0);
-	    py = y + h * (0.6 + 0.3 * ((bits >> 4) & 15) / 15.0);
-	    c2x = px;
-	    c2y = Math.max(y, py - 0.3 * h);
-	    bits = bits >> 8;
-	    return; // cubic to
-	case 4:
-	    c1x = px;
-	    c1y = Math.min(y + h, py + 0.3 * h);
-	    px = x + w * 0.5;
-	    py = y + h * 1.0;
-	    c2x = px - 0.3 * w;
-	    c2y = py;
-	    return; // cubic to
-	case 5:
-	    c1x = px + 0.3 * w;
-	    c1y = py;
-	    px = x + w * (0.7 + 0.3 * (bits & 15) / 15.0);
-	    py = y + h * (0.6 + 0.3 * ((bits >> 4) & 15) / 15.0);
-	    c2x = px;
-	    c2y = Math.max(y, py - 0.3 * h);
-	    bits = bits >> 8;
-	    return; // cubic to
-	case 6:
-	    c1x = px;
-	    c1y = Math.min(y + h, py + 0.3 * h);
-	    px = x + w * (0.6 + 0.3 * (bits & 15) / 15.0);
-	    py = y + h * (0.1 + 0.3 * ((bits >> 4) & 15) / 15.0);
-	    c2x = px;
-	    c2y = Math.max(y, py - 0.3 * h);
-	    bits = bits >> 8;
-	    // bits should be -1 or 0.
-	    return; // cubic to
-	case 7:
-	    c1x = px;
-	    c1y = Math.min(y + h, py + 0.3 * h);
-	    c2x = x + w;
-	    c2y = y;
-	    return; // quad to
-	default:
-	}
-    }
-    public int currentSegment(double[] coords) {
-	coords[0] = c1x;
-	coords[1] = c1y;
-	coords[2] = c2x;
-	coords[3] = c2y;
-	coords[4] = px;
-	coords[5] = py;
-	return index == 1 ? PathIterator.SEG_MOVETO : index == 2 || index == 7 ? PathIterator.SEG_QUADTO : PathIterator.SEG_CUBICTO;
-    }
-    public int currentSegment(float[] coords) {
-	coords[0] = (float) c1x;
-	coords[1] = (float) c1y;
-	coords[2] = (float) c2x;
-	coords[3] = (float) c2y;
-	coords[4] = (float) px;
-	coords[5] = (float) py;
-	return index == 1 ? PathIterator.SEG_MOVETO : index == 2 || index == 7 ? PathIterator.SEG_QUADTO : PathIterator.SEG_CUBICTO;
-    }
-    public boolean isDone() {
-	return index > 7;
-    }
-    public void next() {
-	++index;
-	setSeg();
+    public static ReversiblePathFactory rpf(double x, double y, double w, 
+	double h, int bits)
+    {
+	//System.out.println("RPF called with " + x + ", " + y + ", " + w + ", " + h);
+	ReversiblePathFactory f = new ReversiblePathFactory();
+	/* A nib is roughly an hourglass shape with a rounded 
+	    bottom:
+	
+	     x------------------>x+w
+	    y1     O       O     7
+	    | •••  |       |  ••• 
+	    |   •••|       |•••   
+	    |      2       6      
+	    |     •|       |•     
+	    |  O • |       | • O  
+	    |  | • O       O • |  
+	    |  |•             •|  
+	    |  3               5  
+	    |  |••••       ••••|  
+	    V  |   •••• ••••   |  
+	  y+h  O  O----4----O  O  
+	
+	The control points are all just vertical, except for
+	control points on point 4 which are horizontal
+	Points 2, 3, 5 and 6 can be moved. Any control points
+	must be within the area to avoid twists.
+	
+	We can get nice nib variation by just moving points
+	within a square area. We have 32 bits for 4 points,
+	so 4 bits of variance per dimension per point..
+	
+	Point     Area
+	1         0.0, 0.0 : 0.0, 0.0
+	 cp      -0.1,-0.1 : 0.1, 0.1
+	2         0.1, 0.2 : 0.4, 0.4
+	 cp       0.0 -0.2   0.0 +0.2
+	3         0.0, 0.6 : 0.3, 0.9
+	 cp       0.0 -0.2   0.0 +0.2
+	4         0.5, 1.0 : 0.5, 1.0
+	 cp      -0.3  0.0  +0.3  0.0
+	5         0.7, 0.6 : 1.0, 0.9
+	 cp       0.0 +0.3   0.0 -0.3
+	6         0.6, 0.2 : 0.9, 0.4
+	 cp       0.0 +0.2   0.0 -0.2
+	7         1.0, 0.0 : 1.0, 0.0
+	*/
+	f.appendTriplet(x, y, x, y, x + w * 0.1, y + h * 0.1); // point 1
+	double xb = (bits & 15) / 15.0, yb = (bits >>> 4 & 15) / 15.0;
+	bits = bits >>> 8;
+	f.appendSymmetricTriplet( // point 2
+	    x + w * (0.1 + 0.3 * xb), y + h * (0.2 + 0.2 * yb),
+	    0.0, 0.2 * h);
+	xb = (bits & 15) / 15.0; yb = (bits >>> 4 & 15) / 15.0;
+	bits = bits >>> 8;
+	f.appendSymmetricTriplet( // point 3
+	    x + w * (0.0 + 0.3 * xb), y + h * (0.6 + 0.3 * yb),
+	    0.0, 0.3 * h);
+	f.appendSymmetricTriplet( // point 4
+	    x + w * 0.5, y + h * 1.0,
+	    0.3 * w, 0.0);
+	xb = (bits & 15) / 15.0; yb = (bits >>> 4 & 15) / 15.0;
+	bits = bits >>> 8;
+	f.appendSymmetricTriplet( // point 5
+	    x + w * (0.7 + 0.3 * xb), y + h * (0.6 + 0.3 * yb),
+	    0.0, -0.3 * h);
+	xb = (bits & 15) / 15.0; yb = (bits >>> 4 & 15) / 15.0;
+	bits = bits >>> 8;
+	f.appendSymmetricTriplet( // point 6
+	    x + w * (0.6 + 0.3 * xb), y + h * (0.2 + 0.2 * yb),
+	    0.0, -0.2 * h);
+	f.appendTriplet(x + w * 0.9, y + h * 0.1, x + w, y, x + w, y); // point 7
+	//System.out.println("RPF constructed");
+	return f;
     }
 }

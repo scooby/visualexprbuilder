@@ -39,7 +39,7 @@ public class SquigglyPath implements PathIterator {
 	last_off = 0.0;
 	off = 0.0;
 	update_off();
-	segment = 0; // moveto ? -1 : 0;
+	segment = -1; // moveto ? -1 : 0;
     }
     /** 
 	Handling phase and number of segments
@@ -51,6 +51,10 @@ public class SquigglyPath implements PathIterator {
 	constructor.
     */
     private void update_off() {
+	if(off == l) {
+	    off += 1;
+	    return;
+	}
 	// phase is a multiplier of wavelength
 	double i = wl * ((p < 0.5 ? 0.5 : 1.0) - p);
 	// Check if we're running out of length
@@ -90,7 +94,12 @@ public class SquigglyPath implements PathIterator {
 	if(segment == -1) {
 	    coords[0] = x;
 	    coords[1] = y;
-	    return PathIterator.SEG_MOVETO;
+	    return PathIterator.SEG_LINETO;
+	}
+	if(off > l) {
+	    coords[0] = x + xm * l;
+	    coords[1] = y + ym * l;
+	    return PathIterator.SEG_LINETO;
 	}
 	
 	// Is this point above the centerline? The final point is on the
@@ -117,7 +126,12 @@ public class SquigglyPath implements PathIterator {
 	if(segment == -1) {
 	    coords[0] = (float) x;
 	    coords[1] = (float) y;
-	    return PathIterator.SEG_MOVETO;
+	    return PathIterator.SEG_LINETO;
+	}
+	if(off > l) {
+	    coords[0] = (float) (x + xm * l);
+	    coords[1] = (float) (y + ym * l);
+	    return PathIterator.SEG_LINETO;
 	}
 	
 	// Is this point above the centerline? The final point is on the
@@ -141,7 +155,7 @@ public class SquigglyPath implements PathIterator {
 	return PathIterator.SEG_CUBICTO;
     }
     public boolean isDone() {
-	return off >= l;
+	return segment >= 0 && off > l;
     }
     public void next() {
 	if(segment >= 0) {

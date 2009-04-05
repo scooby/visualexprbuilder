@@ -45,22 +45,26 @@ public NibPath(double _x, double _y, double _w, double _h, Class<?> c) */
 
 	GeneralPath gp = new GeneralPath();
 	gp.append(SegmentPath.moveto(p(0.0, 0.0)), false);
-	double w = 32.0; double a = 2.0; double hp = 0.0; double vp = 0.3;
+	double w = dx(0.3); double a = 3.0; 
 	// North border
+	double hp = 0.0;
 	gp.append(new SquigglyPath(p(0.0, 0.0), p(0.4, 0.0), hp, w, a), false);
-	gp.append(new NibPath(px(0.4), py(0.0), dx(0.2), dy(0.2), int.class), false);
+	gp.append(NibPath.rpf(px(0.4), py(0.0), dx(0.2), dy(0.2),
+	    0x384a3315).forwardPath(), false);
 	hp = SquigglyPath.nextPhase(hp, w, dx(0.6));
 	gp.append(new SquigglyPath(p(0.6, 0.0), p(1.0, 0.0), hp, w, a), false);
-	hp = SquigglyPath.nextPhase(hp, w, dx(0.4));
 	// East
+	double vp = 0.3;
 	gp.append(new SquigglyPath(p(1.0, 0.0), p(1.0, 0.8), vp, w, a), false);
-	vp = SquigglyPath.nextPhase(vp, w, dy(0.8));
 	// South
+	hp = 0.5;
 	gp.append(new SquigglyPath(p(1.0, 0.8), p(0.6, 0.8), hp, w, a), false);
-	gp.append(new NibPath(px(0.6), py(0.8), dx(-0.2), dy(0.2), int.class), false);
+	gp.append(NibPath.rpf(px(0.4), py(0.8), dx(0.2), dy(0.2), 
+	    0x384a3315).reversePath(), false);
 	hp = SquigglyPath.nextPhase(hp, w, dx(0.6));
 	gp.append(new SquigglyPath(p(0.4, 0.8), p(0.0, 0.8), hp, w, a), false);
 	// West
+	vp = 0.8;
 	gp.append(new SquigglyPath(p(0.0, 0.8), p(0.0, 0.0), vp, w, a), false);
 	gp.append(SegmentPath.close(), false);
 	Graphics2D g2d = (Graphics2D) g;

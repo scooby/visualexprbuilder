@@ -37,35 +37,32 @@ public class BasicExpressionUI extends ExpressionUI {
 	new Font("Helvetica", Font.PLAIN, 12);
     private final static BasicStroke _stroke = new BasicStroke(0.75);
     public Font labelFont() { return _labelFont; }
+    private static final double SQRT2 = Math.sqrt(2.0);
     /**
      * Bounding box for content drawn on a Graphics2D object
      * Includes padding, and for arc-based nodes
      *   includes space for arc.
      * Does *not* include space for borders or nibs.
     **/
-    public Rectangle2D contentArea(Graphics2D g, Node n) {
+    public void contentArea(Graphics2D g, Node n, Rectangle2D r) {
 	NodeStyle ns = n.getStyle();
-	Rectangle2D r = labelFont.getStringBounds(n.getLabel(), g.getFontRenderContext());
-	double w = r.getWidth();
-	double h = r.getHeight();
-	// Add some space for padding.
-	w += 2.0;
-	h += 2.0;
-	if(n == semicircle_top || n == semicircle_bottom) {
-	    /* Strictly, it's an semiellipse. We need the ellipse to be large
-	    enough that the label + padding doesn't touch any part of it.
-	    To circumscribe a square with a circle, assume the diameter
-	    runs corner to corner, cutting the square into two isoceles right
-	    triangles. By Pythagorean,  d = sqrt(2 * s^2), so d = sqrt(2) * s.
-	    Given that an ellipse is simply a streched circle a similarly
-	    stretched square will still fit.
-	    Our semiellipse is just half of an ellipse, but our rectangle is
-	    also just half of a larger rectangle so we don't need to do
-	    anything about that.**/
-	    w *= Math.sqrt(2.0);
-	    h *= Math.sqrt(2.0);
-	}
-	return new Rectangle2D.Double(0, 0, w, h);
+	Rectangle2D b = labelFont.getStringBounds(n.getLabel(),
+	    g.getFontRenderContext());
+	/* Strictly, it's an semiellipse. We need the ellipse to be large
+	enough that the label + padding doesn't touch any part of it.
+	To circumscribe a square with a circle, assume the diameter
+	runs corner to corner, cutting the square into two isoceles right
+	triangles. By Pythagorean,  d = sqrt(2 * s^2), so d = sqrt(2) * s.
+	Given that an ellipse is simply a streched circle a similarly
+	stretched square will still fit.
+	Our semiellipse is just half of an ellipse, but our rectangle is
+	also just half of a larger rectangle so we don't need to do
+	anything about that.**/
+	double ellipsePad = ns == semicircle_top || ns == semicircle_bottom 
+	    ? SQRT2 : 1.0;
+	r.setRectangle(b.getX(), b.getY(),
+	    (b.getWidth() + 2.0) * ellipsePad,
+	    (b.getHeight() + 2.0) * ellipsePad);
     }
     /**
      * thickness of the border with the senior sibling

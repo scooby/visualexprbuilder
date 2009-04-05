@@ -47,7 +47,7 @@ public class Group {
     /**
      * Set up the grid of nodes
     **/
-    private void build_grid(Node root) {
+    private void build_grid(Node root, Graphics2D g) {
 	// Make sure it's really the root. The root is often an
 	// UnusedReturn.
 	while(root.getOut() != null)
@@ -72,21 +72,27 @@ public class Group {
 		n.nwidth = 1; // By default it is 0, and it gets set later...
 	    else
 		maxrow = Math.max(maxrow, ni.row + 1);
-
 	    all.add(n);
 	}
 	gmap = new ArrayList<SortedMap<int, NodeInfo>>(maxrow + 1);
 	for(int i = maxrow + 1; i > 0; i--)
 	    gmap.add(new SortedMap<int, NodeInfo>());
+	Rectangle2D labelRect = new Rectangle2D.double();
 	// Iterate backwards to hit the leaves first.
 	// This makes leaves tell parents how wide they need to be.
 	ListIterator<Node> li = all.list_iterator(all.size());
 	while(li.hasPrevious()) {
 	    Node x = li.previous();
+	    NodeInfo xi = ninf.get(x);
+	    eui.contentArea(g, x, labelRect);
+	    xi.cont_width = labelRect.getWidth();
+	    xi.cont_height = labelRect.getHeight();
 	    Node px = x.getOut();
-	    if(px != null)
-		ninf.get(px).nwidth += ninf.get(x).nwidth;
-	    
+	    if(px == null)
+		continue;
+	    NodeInfo pxi = ninf.get(px);
+	    pxi.span += xi.span;
+	    pxi.chld_width += Math.max(xi.chld_width, xi.cont_width);
 	}
 	// Iterate forwards as a node's column is older sibling + nwidth
 	li = all.list_iterator(0);
@@ -96,26 +102,17 @@ public class Group {
 	    if(xi.off == 0)
 		xi.col = 0;
 	    else
-		xi.col = xi.old_sib.col + xi.old_sib.nwidth;
+		xi.col = xi.old_sib.col + xi.old_sib.span;
 	    gmap.get(xi.row).put(xi.col, xi);
-	    
 	}
-	
-	// Figure out sizes
-	
     }
-    private SortedMap<double, int> cols;
-    private SortedMap<double, int> rows;
-    private ArrayList<Node> memberNodes;
-    private Shape area;
-    private Shape lines;
     
     private ArrayList<SortedMap<int, NodeInfo>> gmap;
     private IdentityHashMap<Node, NodeInfo> ninf;
     private class NodeInfo {
 	public NodeInfo(Node n, int r, int o, NodeInfo p, NodeInfo os) { 
-	    node = n; 
-	    row = r; 
+	    node = n;
+	    row = r;
 	    off = o;
 	    parent = p;
 	    old_sib = os;
@@ -127,14 +124,9 @@ public class Group {
 	public int row;
 	public int col;
 	public int off;
-	public int nwidth;
-	public double width;
-	public double height;
-	public double ch_bdr;
-	public double pr_bdr;
-	public double sr_bdr;
-	public double jr_bdr;
-	public boolean collapse_older;
-	public boolean collapse_parent;
+	public int span;
+	public double cont_width;
+	public double cont_height;
+	public double chld_width;
     }
 }

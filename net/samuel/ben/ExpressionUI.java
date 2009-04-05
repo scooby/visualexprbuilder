@@ -74,12 +74,12 @@ abstract public class ExpressionUI extends javax.swing.plaf.ComponentUI {
      */
     abstract public Paint areaPaint(Node n);
     /**
-     * Bounding box for content drawn on a Graphics2D object
+     * Sets bounding box for content drawn on a Graphics2D object
      * Includes padding, and for arc-based nodes
      *   includes space for arc.
      * Does *not* include space for borders or nibs.
      */
-    abstract public Rectangle2D contentArea(Graphics2D g, Node n);
+    abstract public void contentArea(Graphics2D g, Node n, Rectangle2D r);
     /**
      * thickness of the border with the senior sibling
      * this is west border width in a LTR UI
