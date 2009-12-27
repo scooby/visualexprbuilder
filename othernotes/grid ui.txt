@@ -1,0 +1,68 @@
+Grid based layout?
+
+ - Of every four squares, 1 holds widgets and 3 route wires.
+
+ - Wires can run into or out of four sides of a square.
+
+ - A widget has predefined ports.
+
+ - A widget must be one by one? (yes for now)
+
+Ports
+
+ - An port is a side (0 to 3, integer) and a fraction (0 to 1, rational).
+
+ - Sides are 0-N, 1-E, 2-S, 3-W.
+
+ - An port pair must use two different sides.
+
+ - A port is (entry, exit).
+
+Wires
+
+ - A wired square is defined as a series of port pairs.
+
+ - No two ports can be the same side and fraction.
+
+ - Crossovers can be calculated on the fly.
+
+ - Lay down straight horizontal and vertical wires first. They should not be forced to reroute at all.
+
+ - Next lay down horizontal and vertical twists.
+
+ - Mitigate this, and improve appearance, by rounding corners.
+
+Combs
+
+ - Users can clean up wires by using combs. 
+
+ - Combs are placed on a side. They can't be adjacent to a widget.
+
+ - Combs force wires to route through the squares on either side of the comb.
+
+ - Uncombed wires can't use that square.
+
+Routing
+
+ - Users don't want stuff jumping around constantly, so don't relayout the whole system when wires move.
+
+ - The autolaying problem is to start at port A and go to port B.
+
+ - But it has to go through the combs.
+
+ - So the algorithm is a two-level A* search.
+
+ - First level picks the order of the combs. Heuristic is crow's eye distance.
+
+ - Second level is pick the actual squares to travel. Same heuristic.
+
+ - Autolaying wires should weight choices by length and business of route.
+
+ - Business is some sum of # of ports per side and # of crossovers.
+
+ - Fractions are applied after the route is selected, since they depend on length.
+
+ - Fraction choice is between the desired fraction vs. the biggest gap.
+
+ - Desired fraction: n% through route, it is n% between start and end fractions.
+

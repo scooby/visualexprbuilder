@@ -1,0 +1,32 @@
+= Three ways to deploy =
+
+To start with, only option will be standalone setup. Also, there will be no supplementary tools beyond a + button that will pop up a dialog to ask the name of the new operator, and a - button to delete part of an expression.
+
+== Small widget setup ==
+Swing container - This is on a regular Swing UI app
+Small widget - This is a small widget that just shows the current value
+Quick expand canvas - Probably an embedded Swing frame that appears when the user tries to edit the expression via an expando-button.
+Supplementary tools - Another frame that appears next to the canvas for the operator gallery.
+
+== Large widget setup ==
+Swing container - Again, a regular Swing UI app
+Large widget - This is a widget large enough to display the expression directly.
+Supplementary tools - The supplementary tools would probably appear on demand. Either through expando-button or by acquiring focus.
+
+== Standalone setup ==
+Swing container - probably a whole swing frame, but not necessarily.
+Canvas - The canvas is directly in the container.
+Supplementary tools - The tools are always display with the container.
+
+= Handling supplementary tools =
+
+Tools are basically a search widget and a list of operators. None of the tools will make the first release; creating a new operator will involve clicking a plus and typing the name.
+
+Search widget:
+  Searching should highlight matching operators in the new operator list, and matching operators in the expression. It should have an X when a search is active to make it explicit how to clear the search.
+
+List of operators:
+  By default, should show operators by popularity. When search is active, should show only matching operators by relevance. At the end of the list, it should state "Some operators hidden by search. To see all, clear search." or something to that effect.
+
+Canvas:
+  To enable testing, user should be able to move unwanted parts of an expression to the side or disable them, but this won't happen first off. For simplicity, assume there is only one expression and it's fully active.

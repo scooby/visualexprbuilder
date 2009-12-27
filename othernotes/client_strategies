@@ -1,0 +1,22 @@
+Who does what?
+
+This is supposed to be a widget that exists in a larger application that uses
+the standard Swing user interface.
+
+Unlike most widgets, the data it works with could be fairly complex.
+
+The internal state is also fairly complex. The user can "lift" parts of the
+expression to manipulate them.
+
+Most applications will want to use an "import-manipulate-export" strategy. That
+means that the application stores an immutable expression, for example, a
+string. The widget will manipulate this string and to put the result back into
+the application, it exports the result.
+
+I could design an "live-objects" strategy. This would be appropriate for very
+large expressions where we're not trying to visualize the entire expression at
+once, however, I don't think this would be useful for this control.
+
+Separable Model Architecture
+
+The application must provide a model that can get and set a 
