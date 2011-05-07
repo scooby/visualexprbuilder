@@ -19,12 +19,19 @@
  */
 
 package net.samuel.ben;
-import java.util.NavigableMap;
-import java.util.TreeMap;
-import javax.swing.tree.MutableTreeNode;
 
-class ExpressionModel {
-    //private NavigableMap<String, Object> inputs;
-    //private NavigableMap<String, Object> operators;
-    private List<Element> elems;
+import java.util.List;
+
+// Represents an object managed by the ExpressionComponent
+interface Node {
+	public List<? extends Node> getIns();
+    public Node getOut();
+    public Class<?> getType();
+    public Object getValue();
+    public String getLabel();
+    public boolean canAddIns(); // Should this node have an input adder
+    public void addIn(Node n);
+    public void setIn(int i, Node n);
+    public void setOut(Node n);
+    public NodeStyle getStyle();
 }

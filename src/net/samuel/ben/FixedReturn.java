@@ -22,7 +22,7 @@ package net.samuel.ben;
 
 abstract class FixedReturn implements Node {
     public NodeStyle getStyle() {
-	return straight_sides;
+	return NodeStyle.straight_sides;
     }
 }
 

@@ -12,25 +12,26 @@
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
     Public License for more details.
-    
+
     You should have received a copy of the GNU General Public License along
     with VisualExpressionBuilder, in the file COPYING in the root directory of
     the distribution. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package net.samuel.ben;
+import java.util.List;
 
-abstract class Literal implements Node {
-    abstract public List<? extends Node> getIns();
-    abstract public Node getOut();
-    abstract public String getLabel();
-    abstract public Object getValue();
-    abstract public Class<?> getType();
-    abstract public bool canAddIns(); // Should this node have an input adder
-    abstract public void addIn(Node n);
-    abstract public void setIn(int i, Node n);
-    abstract public void setOut(Node n);
-    public NodeStyle getStyle() {
-	return straight_sides;
-    }
+abstract class Operator implements Node {
+	abstract public List<? extends Node> getIns();
+	abstract public Node getOut();
+	abstract public Class<?> getType();
+	abstract public Object getValue();
+	abstract public String getLabel();
+	public NodeStyle getStyle() {
+		return NodeStyle.squiggly_sides;
+	}
+	abstract public boolean canAddIns(); // Should this node have an input adder
+	abstract public void addIn(Node n);
+	abstract public void setIn(int i, Node n);
+	abstract public void setOut(Node n);
 }

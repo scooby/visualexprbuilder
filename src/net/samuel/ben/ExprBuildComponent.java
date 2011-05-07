@@ -16,22 +16,20 @@
     You should have received a copy of the GNU General Public License along
     with VisualExpressionBuilder, in the file COPYING in the root directory of
     the distribution. If not, see <http://www.gnu.org/licenses/>.
- */
+**/
 
 package net.samuel.ben;
-import java.lang.reflect.InvocationTargetException;
+import java.awt.Graphics2D;
 
-abstract class Operator implements Node {
-    abstract public List<? extends Node> getIns();
-    abstract public Node getOut();
-    abstract public Class<?> getType();
-    abstract public Object getValue();
-    abstract public String getLabel();
-    public NodeStyle getStyle() {
-	return squiggly_sides;
-    }
-    abstract public bool canAddIns(); // Should this node have an input adder
-    abstract public void addIn(Node n);
-    abstract public void setIn(int i, Node n);
-    abstract public void setOut(Node n);
+public class ExprBuildComponent extends javax.swing.JComponent {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3216562678329019128L;
+
+	public ExpressionUI getUI() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

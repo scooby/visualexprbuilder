@@ -19,6 +19,7 @@
 **/
 
 package net.samuel.ben;
+import java.awt.Font;
 import java.awt.Stroke;
 import java.awt.BasicStroke;
 import java.awt.Paint;
@@ -34,8 +35,8 @@ public class BasicExpressionUI extends ExpressionUI {
     public Paint borderPaint() { return Color.black; }
     public Paint areaPaint() { return Color.white; }
     private final static Font _labelFont = 
-	new Font("Helvetica", Font.PLAIN, 12);
-    private final static BasicStroke _stroke = new BasicStroke(0.75);
+    	new Font("Helvetica", Font.PLAIN, 12);
+    private final static BasicStroke _stroke = new BasicStroke((float) 0.75);
     public Font labelFont() { return _labelFont; }
     private static final double SQRT2 = Math.sqrt(2.0);
     /**
@@ -46,7 +47,7 @@ public class BasicExpressionUI extends ExpressionUI {
     **/
     public void contentArea(Graphics2D g, Node n, Rectangle2D r) {
 	NodeStyle ns = n.getStyle();
-	Rectangle2D b = labelFont.getStringBounds(n.getLabel(),
+	Rectangle2D b = labelFont().getStringBounds(n.getLabel(),
 	    g.getFontRenderContext());
 	/* Strictly, it's an semiellipse. We need the ellipse to be large
 	enough that the label + padding doesn't touch any part of it.
@@ -58,9 +59,9 @@ public class BasicExpressionUI extends ExpressionUI {
 	Our semiellipse is just half of an ellipse, but our rectangle is
 	also just half of a larger rectangle so we don't need to do
 	anything about that.**/
-	double ellipsePad = ns == semicircle_top || ns == semicircle_bottom 
+	double ellipsePad = ns == NodeStyle.semicircle_top || ns == NodeStyle.semicircle_bottom 
 	    ? SQRT2 : 1.0;
-	r.setRectangle(b.getX(), b.getY(),
+	r.setRect(b.getX(), b.getY(),
 	    (b.getWidth() + 2.0) * ellipsePad,
 	    (b.getHeight() + 2.0) * ellipsePad);
     }
@@ -70,21 +71,22 @@ public class BasicExpressionUI extends ExpressionUI {
     **/
     public double seniorBorderSize(Graphics2D g, Node n, Rectangle2D content)
     { 
-	switch(n.getStyle()) {
-	case squiggly_sides:
-	    return 2.0 * squigglyAmplitude() + _stroke.getLineWidth();
-	case straight_sides:
-	    return _stroke.getLineWidth();
-	case pointy_sides:
-	    // pointyangle is twice the angle of a right triangle whose
-	    // opposite side is half our height and whose adjacent is the
-	    // width we're interested in.
-	    // tan(pointy/2) = height/2 / return
-	    return content.getHeight() / 2.0 / Math.tan(pointyAngle());
-	case semicircle_top:
-	case semicircle_bottom:
-	    return 0.0;
-	}
+		switch(n.getStyle()) {
+		case squiggly_sides:
+		    return 2.0 * squigglyAmplitude() + _stroke.getLineWidth();
+		case straight_sides:
+		    return _stroke.getLineWidth();
+		case pointy_sides:
+		    // pointyangle is twice the angle of a right triangle whose
+		    // opposite side is half our height and whose adjacent is the
+		    // width we're interested in.
+		    // tan(pointy/2) = height/2 / return
+		    return content.getHeight() / 2.0 / Math.tan(pointyAngle());
+		case semicircle_top:
+		case semicircle_bottom:
+		    return 0.0;
+		}
+		throw new AssertionError();
     }
     /**
      * thickness of the border with the junior sibling
@@ -92,7 +94,7 @@ public class BasicExpressionUI extends ExpressionUI {
     **/
     public double juniorBorderSize(Graphics2D g, Node n, Rectangle2D content)
     {
-	return seniorBorderSize(g, n, content);
+    	return seniorBorderSize(g, n, content);
     }
     /**
      * thickness of the border with the children
@@ -101,20 +103,20 @@ public class BasicExpressionUI extends ExpressionUI {
     public double childrenBorderSize(Graphics2D g, Node n, 
 	Rectangle2D content)
     {
-	switch(n.getStyle()) {
-	case squiggly_sides:
-	case semicircle_bottom:
-	    return 2.0 * squigglyAmplitude() + _stroke.getLineWidth();
-	    return _stroke.getLineWidth();
-	case pointy_sides:
-	    // Check if this is a capture or a recall
-	    return n.getIns().isEmpty() ? _stroke.getLineWidth() :
-		2.0 * squigglyAmplitude() + _stroke.getLineWidth();
-	case semicircle_top:
-	    return 0.0;
-	case straight_sides:
-	    return _stroke.getLineWidth();
-	}
+		switch(n.getStyle()) {
+		case squiggly_sides:
+		case semicircle_bottom:
+		    return 2.0 * squigglyAmplitude() + _stroke.getLineWidth();
+		case pointy_sides:
+		    // Check if this is a capture or a recall
+		    return n.getIns().isEmpty() ? _stroke.getLineWidth() :
+			2.0 * squigglyAmplitude() + _stroke.getLineWidth();
+		case semicircle_top:
+		    return 0.0;
+		case straight_sides:
+		    return _stroke.getLineWidth();
+		}
+		throw new AssertionError();
     }
     /**
      * thickness of the border with the parent
@@ -122,33 +124,33 @@ public class BasicExpressionUI extends ExpressionUI {
     **/
     public double parentBorderSize(Graphics2D g, Node n, Rectangle2D content)
     {
-	switch(n.getStyle()) {
-	case squiggly_sides:
-	case semicircle_top:
-	    return 2.0 * squigglyAmplitude() + _stroke.getLineWidth();
-	    return _stroke.getLineWidth();
-	case straight_sides:
-	case pointy_sides:
-	    // Check if this is a capture or a recall
-	    return n.getIns().isEmpty() ? _stroke.getLineWidth() :
-		2.0 * squigglyAmplitude() + _stroke.getLineWidth();
-	case semicircle_bottom:
-	    return 0.0;
-	}
-     }
+		switch(n.getStyle()) {
+		case squiggly_sides:
+		case semicircle_top:
+		    return 2.0 * squigglyAmplitude() + _stroke.getLineWidth();
+		case straight_sides:
+		case pointy_sides:
+		    // Check if this is a capture or a recall
+		    return n.getIns().isEmpty() ? _stroke.getLineWidth() :
+			2.0 * squigglyAmplitude() + _stroke.getLineWidth();
+		case semicircle_bottom:
+		    return 0.0;
+		}
+		throw new AssertionError();
+    }
     /**
      * distance the nib descends
      * this is the height of the north descender area in a LTR UI
     **/
     public double nibDescent() {
-	return 12.0;
+    	return 12.0;
     }
     /**
      * width of the nib
      * this is the width of the descender itself in a LTR UI
     **/
     public double nibExtent() {
-	return 8.0;
+    	return 8.0;
     }
     /**
      * minimal spacing between nibs
@@ -158,7 +160,7 @@ public class BasicExpressionUI extends ExpressionUI {
      * value * 2, between a nib and a corner, there will be >= this value.
     **/
     public double nibSpacing() {
-	return 2.0;
+    	return 2.0;
     }
     // This should be small, 2 or 3 pixels. Note the actual border width is
     // twice this.
@@ -172,4 +174,9 @@ public class BasicExpressionUI extends ExpressionUI {
      * The return value should be in radians.
     **/
     public double pointyAngle() { return Math.toRadians(160); }
+	@Override
+	public Paint areaPaint(Node n) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
