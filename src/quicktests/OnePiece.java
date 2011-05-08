@@ -7,7 +7,9 @@ import javax.swing.*;
 import net.samuel.ben.*;
 
 public class OnePiece extends JPanel {
-    public OnePiece() {
+	private static final long serialVersionUID = -2574375926597058507L;
+
+	public OnePiece() {
 	super();
 	inset = new Rectangle2D.Double();
 	strk = new BasicStroke(1.0f);

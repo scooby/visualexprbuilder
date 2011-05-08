@@ -19,13 +19,12 @@
 **/
 
 package net.samuel.ben;
-import java.awt.Font;
-import java.awt.Stroke;
 import java.awt.BasicStroke;
-import java.awt.Paint;
 import java.awt.Color;
-import java.awt.FontMetrics;
+import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Paint;
+import java.awt.Stroke;
 import java.awt.geom.Rectangle2D;
 
 public class BasicExpressionUI extends ExpressionUI {

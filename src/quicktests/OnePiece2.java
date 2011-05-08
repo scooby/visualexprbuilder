@@ -1,11 +1,22 @@
 package quicktests;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.geom.*;
-import javax.swing.*;
+import java.awt.BasicStroke;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 public class OnePiece2 extends JPanel {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6304004113864637817L;
 
 	public void paint(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
