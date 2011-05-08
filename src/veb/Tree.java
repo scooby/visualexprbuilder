@@ -7,7 +7,7 @@ package veb;
  * @author ben
  *
  */
-public interface GenericTree {
+public interface Tree {
 	Content getRoot();
 	Iterable<Content> getChildrenOf(Content node);
 	Content getParentOf(Content node);
