@@ -39,8 +39,8 @@ final public class Grid implements Iterable<Elem>{
 	public Drawable getDrawable(int x, int y) {
 		return ex[y * rowwidth + x].getD();
 	}
-	final static private int dt = Content.decoThick;
-	final static private int de = Content.decoExtent;	
+	final static private int dt = Content.DECO_THICK;
+	final static private int de = Content.DECO_EXTENT;	
 	private void setArea(Area a, Content c) {
 		Area ai = a.inset(de);
 		Elem e = new Elem(ai, c);

@@ -18,8 +18,9 @@
     the distribution. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.samuel.ben;
+package veb.swing;
 import java.awt.geom.Rectangle2D;
+
 
 public class NibPath {
     public static ReversiblePathFactory rpf(Rectangle2D r, int bits) 

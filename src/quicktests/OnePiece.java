@@ -1,10 +1,22 @@
 package quicktests;
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.geom.*;
-import java.util.*;
-import javax.swing.*;
-import net.samuel.ben.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+import veb.swing.NibPath;
+import veb.swing.SegmentPath;
+import veb.swing.SquigglyPath;
+
 
 public class OnePiece extends JPanel {
 	private static final long serialVersionUID = -2574375926597058507L;

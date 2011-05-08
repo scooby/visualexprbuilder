@@ -18,7 +18,7 @@
     the distribution. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.samuel.ben;
+package veb.swing;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 /**

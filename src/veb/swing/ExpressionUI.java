@@ -18,11 +18,12 @@
     the distribution. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.samuel.ben;
+package veb.swing;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Stroke;
 import java.awt.geom.Rectangle2D;
+
 
 /**
  * Conventions are based on left-to-right:
