@@ -19,6 +19,12 @@ public final class Vector {
 		this.x = Scalar.inst(x);
 		this.y = Scalar.inst(y);
 	}
+	public Vector add(Vector o) {
+		return new Vector(x.add(o.x), y.add(o.y));
+	}
+	public Vector subtract(Vector o) {
+		return new Vector(x.subtract(o.x), y.subtract(o.y));
+	}
 	public Vector scale(int s) {
 		return new Vector(x.scale(s), y.scale(s));
 	}

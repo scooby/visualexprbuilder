@@ -1,18 +1,14 @@
 package veb;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Layout {
-	final private Direction overall_dir;
-	final private Vector origin;
-	final private GenericTree tree;
+	final private Tree tree;
 	final private Surface surface;
+	private Grid grid;
 	
-	public Layout(Direction d, Vector o, GenericTree gt, Surface s) {
-		overall_dir = d;
-		origin = o;
+	public Layout(Direction d, Tree gt, Surface s) {
 		tree = gt;
 		surface = s;
 	}
@@ -23,62 +19,64 @@ public class Layout {
 	 *  Collapse dmd to d where possible.
 	 */
 	public void layout() {
-		Map <Offset, Content> grid = new HashMap<Offset, Content>();
-		grid(grid, tree.getRoot(), 0, 0);
-		Map <Offset, Drawable> dgrid = new HashMap<Offset, Drawable>();
-		for(Offset o : grid.keySet()) {
-			Content n = grid.get(o);
-			for(int s = -2; s < 3; s++) {
-				for(int t = -2; t < 3; t++) {
-					Drawable d = n.getDecoration(s, t);
-					dgrid.put(o.slot(s, t), d);
-				}
-			}
-		}
+		Map<Content, Area> map = new HashMap<Content, Area>();
+		_layout(map, tree.getRoot(), 0, 0);
+		grid = Grid.fromMap(map);
+		grid.mergeDecorations();
+		grid.simplify();	
 	}
-	private int grid(Map<Offset, Content> g, Content n, int x, int y) {
+	private int _layout(Map<Content, Area> g, Content n, int x, int y) {
 		int sx = x, cx = x;
 		for(Content d : tree.getChildrenOf(n)) {
-			cx = grid(g, d, cx, y + 1);
+			cx = _layout(g, d, cx, y + 1);
 		}
 		if(cx == sx)
 			cx += 1;
-		for(x = sx; x < cx; x++) {
-			g.put(new Offset(x, y), n);
-		}
+		g.put(n, new Area(sx, y, cx, y + 1));
 		return cx;
 	}
-	private final class Offset {
-		public final int x;
-		public final int y;
-		public final int s;
-		public final int t;
-		
-		public Offset(int x, int y) { this.x = x; this.y = y; this.s = 0; this.t = 0;}
-		public Offset(int x, int y, int s, int t) { this.x = x; this.y = y; this.s = s; this.t = t;}
-		public Offset slot(int _s, int _t) {
-			return s == _s && t == _t ? this : new Offset(x, y, _s, _t);
+	public void draw() {
+		Scalar[] rows = new Scalar[grid.height() + 1];
+		Scalar[] cols = new Scalar[grid.width() + 1];
+		for(Elem e : grid) {
+			Area a = e.getA();
+			Drawable d = e.getD();
+			Vector v = d.getSize();
+			if(v.x != null) {
+				int x = a.sx;
+				for(Scalar s : v.x.spread(a.width())) {
+					cols[x] = s.add(cols[x]);
+					x++;
+				}
+			}
+			if(v.y != null) {
+				int y = a.sy;
+				for(Scalar s : v.y.spread(a.height())) {
+					rows[y] = s.add(rows[y]);
+					y++;
+				}
+			}
 		}
-		/* (non-Javadoc)
-		 * @see java.lang.Object#hashCode()
-		 */
-		@Override
-		public int hashCode() {
-			final int prime = 101;
-			return prime * (prime * (prime + x) + y) + s;
+		Scalar off = Scalar.inst(0L);
+		for(int i = 0; i < rows.length - 1; i++) {
+			Scalar height = rows[i] == null ? Scalar.inst(0L) : rows[i];
+			rows[i] = off;
+			off = off.add(height);
 		}
-
-		/* (non-Javadoc)
-		 * @see java.lang.Object#equals(java.lang.Object)
-		 */
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null || !(obj instanceof Offset))
-				return false;
-			Offset other = (Offset) obj;
-			return x == other.x && y == other.y && s == other.s;
+		rows[rows.length - 1] = off;
+		off = Scalar.inst(0L);
+		for(int i = 0; i < cols.length - 1; i++) {
+			Scalar width = cols[i] == null ? Scalar.inst(0L) : cols[i];
+			cols[i] = off;
+			off = off.add(width);
+		}
+		cols[cols.length - 1] = off;
+		for(Elem e : grid) {
+			Area a = e.getA();
+			Drawable d = e.getD();
+			Vector o = new Vector(cols[a.sx], rows[a.sy]);
+			Vector p = new Vector(cols[a.ex], rows[a.ey]);
+			surface.draw(o, p.subtract(o), d);
 		}
 	}
 }
