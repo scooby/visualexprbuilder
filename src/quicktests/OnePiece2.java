@@ -18,9 +18,10 @@ public class OnePiece2 extends JPanel {
 	 */
 	private static final long serialVersionUID = -6304004113864637817L;
 
-	public void paint(Graphics g) {
-		Graphics2D g2d = (Graphics2D) g;
-		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
+	@Override
+	public void paint(final Graphics g) {
+		final Graphics2D g2d = (Graphics2D) g;
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.translate((getBounds().getWidth() - PieceWidth()) / 2, (getBounds().getHeight() - PieceHeight()) / 2);
 		g2d.setStroke(new BasicStroke(1.0f));
@@ -42,12 +43,13 @@ public class OnePiece2 extends JPanel {
 		return null;
 	}
 
-	public static void main(String args[]) {
-		JFrame f = new JFrame("OnePiece");
+	public static void main(final String args[]) {
+		final JFrame f = new JFrame("OnePiece");
 		f.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {System.exit(0);}
+			@Override
+			public void windowClosing(final WindowEvent e) {System.exit(0);}
 		});
-		OnePiece op = new OnePiece();
+		final OnePiece op = new OnePiece();
 		f.getContentPane().add("Center", op);
 		f.setSize(300, 300);
 		f.pack();

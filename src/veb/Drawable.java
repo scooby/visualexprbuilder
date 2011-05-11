@@ -1,8 +1,7 @@
 package veb;
 
 public interface Drawable {
-	Vector getSize(); 
-	void draw(Surface surf, Vector origin, Vector size);
+	Vector getSize();
 	Drawable merge(Drawable o);
 	boolean isEmpty();
 	@Override

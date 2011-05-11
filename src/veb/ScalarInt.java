@@ -2,12 +2,12 @@ package veb;
 
 public final class ScalarInt extends Scalar {
 	private final int val;
-	public ScalarInt(int x) {
+	public ScalarInt(final int x) {
 		val = x;
 	}
 	@Override
 	public double getDouble() {
-		return (double) val;
+		return val;
 	}
 	@Override
 	public long getLong() {
@@ -18,11 +18,11 @@ public final class ScalarInt extends Scalar {
 		return val;
 	}
 	@Override
-	public Scalar scale(int s) {
+	public Scalar scale(final int s) {
 		return new ScalarInt(val * s);
 	}
 	@Override
-	public Scalar add(Scalar other) {
+	public Scalar add(final Scalar other) {
 		if(other == null)
 			return this;
 		if(other instanceof ScalarInt)
@@ -47,14 +47,14 @@ public final class ScalarInt extends Scalar {
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
 			return false;
 		if (!(obj instanceof ScalarInt))
 			return false;
-		ScalarInt other = (ScalarInt) obj;
+		final ScalarInt other = (ScalarInt) obj;
 		if (val != other.val)
 			return false;
 		return true;

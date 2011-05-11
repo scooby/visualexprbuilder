@@ -12,14 +12,13 @@
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
     Public License for more details.
-    
+
     You should have received a copy of the GNU General Public License along
     with VisualExpressionBuilder, in the file COPYING in the root directory of
     the distribution. If not, see <http://www.gnu.org/licenses/>.
-**/
+ **/
 
 package veb.swing;
-import java.awt.Graphics2D;
 
 
 public class ExprBuildComponent extends javax.swing.JComponent {

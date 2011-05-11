@@ -12,7 +12,7 @@
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
     Public License for more details.
-    
+
     You should have received a copy of the GNU General Public License along
     with VisualExpressionBuilder, in the file COPYING in the root directory of
     the distribution. If not, see <http://www.gnu.org/licenses/>.
@@ -29,46 +29,51 @@ import java.util.Iterator;
  * PathIterator contract doesn't say anything about that.
  */
 public class CompoundPath implements PathIterator {
-    private Iterator<? extends PathIterator> pii;
-    PathIterator pi;
-    public CompoundPath(Iterable<? extends PathIterator> pathCollection) {
-	pii = pathCollection.iterator();
-	pi = null;
-    }
-    public int currentSegment(double[] coords) {
-	updatePi();
-	if(pi == null)
-	    return -1; // invalid segment type
-	return pi.currentSegment(coords);
-    }
-    public int currentSegment(float[] coords) {
-	updatePi();
-	if(pi == null)
-	    return -1; // ditto
-	return pi.currentSegment(coords);
-    }
-    public int getWindingRule() {
-	updatePi();
-	if(pi == null)
-	    return -1; // invalid winding rule
-	return pi.getWindingRule();
-    }
-    public boolean isDone() {
-	updatePi();
-	return pi != null;
-    }
-    public void next() {
-	updatePi();
-	pi.next();
-	if(pi.isDone())
-	    pi = null;
-    }
-    private void updatePi() {
-	if(pi == null)
-	    while(pii.hasNext()) {
-		pi = pii.next();
-		if(!pi.isDone())
-		    return;
-	    }
-    }
+	private final Iterator<? extends PathIterator> pii;
+	PathIterator pi;
+	public CompoundPath(final Iterable<? extends PathIterator> pathCollection) {
+		pii = pathCollection.iterator();
+		pi = null;
+	}
+	@Override
+	public int currentSegment(final double[] coords) {
+		updatePi();
+		if(pi == null)
+			return -1; // invalid segment type
+		return pi.currentSegment(coords);
+	}
+	@Override
+	public int currentSegment(final float[] coords) {
+		updatePi();
+		if(pi == null)
+			return -1; // ditto
+		return pi.currentSegment(coords);
+	}
+	@Override
+	public int getWindingRule() {
+		updatePi();
+		if(pi == null)
+			return -1; // invalid winding rule
+		return pi.getWindingRule();
+	}
+	@Override
+	public boolean isDone() {
+		updatePi();
+		return pi != null;
+	}
+	@Override
+	public void next() {
+		updatePi();
+		pi.next();
+		if(pi.isDone())
+			pi = null;
+	}
+	private void updatePi() {
+		if(pi == null)
+			while(pii.hasNext()) {
+				pi = pii.next();
+				if(!pi.isDone())
+					return;
+			}
+	}
 }

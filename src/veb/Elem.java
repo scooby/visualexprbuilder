@@ -3,7 +3,7 @@ package veb;
 public class Elem {
 	private final Area a;
 	private final Drawable d;
-	public Elem(Area a, Drawable d) {
+	public Elem(final Area a, final Drawable d) {
 		this.a = a;
 		this.d = d;
 	}
@@ -27,22 +27,22 @@ public class Elem {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((a == null) ? 0 : a.hashCode());
-		result = prime * result + ((d == null) ? 0 : d.hashCode());
+		result = prime * result + (a == null ? 0 : a.hashCode());
+		result = prime * result + (d == null ? 0 : d.hashCode());
 		return result;
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
 			return false;
 		if (!(obj instanceof Elem))
 			return false;
-		Elem other = (Elem) obj;
+		final Elem other = (Elem) obj;
 		if (a == null) {
 			if (other.a != null)
 				return false;

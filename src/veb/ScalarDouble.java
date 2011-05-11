@@ -9,13 +9,13 @@ package veb;
  */
 public final class ScalarDouble extends Scalar {
 	final double val;
-	public ScalarDouble(double x) { val = x; }
+	public ScalarDouble(final double x) { val = x; }
 	@Override
 	public double getDouble() {
 		return val;
 	}
 	@Override
-	public Scalar scale(int s) {
+	public Scalar scale(final int s) {
 		return new ScalarDouble(val * s);
 	}
 	@Override
@@ -24,7 +24,7 @@ public final class ScalarDouble extends Scalar {
 		return false;
 	}
 	@Override
-	public Scalar add(Scalar other) {
+	public Scalar add(final Scalar other) {
 		return new ScalarDouble(val + other.getDouble());
 	}
 	/* (non-Javadoc)
@@ -36,21 +36,21 @@ public final class ScalarDouble extends Scalar {
 		int result = 1;
 		long temp;
 		temp = Double.doubleToLongBits(val);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + (int) (temp ^ temp >>> 32);
 		return result;
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
 			return false;
 		if (!(obj instanceof ScalarDouble))
 			return false;
-		ScalarDouble other = (ScalarDouble) obj;
+		final ScalarDouble other = (ScalarDouble) obj;
 		if (Double.doubleToLongBits(val) != Double.doubleToLongBits(other.val))
 			return false;
 		return true;

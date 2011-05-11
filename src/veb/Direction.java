@@ -10,7 +10,7 @@ public enum Direction {
 	private final Vector v;
 	private static final int yflip = 1;
 	private static Direction[] members = new Direction[] { north, east, south, west };
-	private Direction(int x, int y) {
+	private Direction(final int x, final int y) {
 		this.x = x;
 		this.y = y * yflip;
 		v = new Vector(x, y);

@@ -7,7 +7,7 @@ public final class Area implements Iterable<Area> {
 	final public int ex;
 	final public int sy;
 	final public int ey;
-	public Area(int sx, int sy, int ex, int ey) {
+	public Area(final int sx, final int sy, final int ex, final int ey) {
 		assert ex >= sx && ey >= sy && sx >= 0 && sy >= 0;
 		this.sx = sx;
 		this.ex = ex;
@@ -16,16 +16,16 @@ public final class Area implements Iterable<Area> {
 	}
 	public int width() { return ex - sx; }
 	public int height() { return ey - sy; }
-	public Area scale(int s) {
+	public Area scale(final int s) {
 		return new Area(sx * s, sy * s, ex * s, ey * s);
 	}
-	public Area inset(int i) {
+	public Area inset(final int i) {
 		return new Area(sx + i, sy + i, ex - i, ey - i);
 	}
-	public Area offset(int x, int y) {
+	public Area offset(final int x, final int y) {
 		return new Area(sx + x, sy + y, ex + x, ey + y);
 	}
-	public boolean overlap(Area o) {
+	public boolean overlap(final Area o) {
 		if(o == null)
 			return false;
 		return sx < o.ex && o.sx < ex && sy < o.ey && o.sy < ey;
@@ -55,14 +55,14 @@ public final class Area implements Iterable<Area> {
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
 			return false;
 		if (!(obj instanceof Area))
 			return false;
-		Area other = (Area) obj;
+		final Area other = (Area) obj;
 		if (ex != other.ex)
 			return false;
 		if (ey != other.ey)
@@ -73,6 +73,7 @@ public final class Area implements Iterable<Area> {
 			return false;
 		return true;
 	}
+	@Override
 	public Iterator<Area> iterator() {
 		return new Iterator<Area>() {
 			int x = sx;
@@ -83,7 +84,7 @@ public final class Area implements Iterable<Area> {
 			}
 			@Override
 			public Area next() {
-				Area a = new Area(x, y, x + 1, y + 1);
+				final Area a = new Area(x, y, x + 1, y + 1);
 				x++;
 				if(x >= ex) {
 					x = sx;
@@ -97,7 +98,7 @@ public final class Area implements Iterable<Area> {
 			}
 		};
 	}
-	public int xdist(Area o) {
+	public int xdist(final Area o) {
 		if(sx < o.ex && o.sx < ex)
 			return 0;
 		if(o.ex < sx)
@@ -106,7 +107,7 @@ public final class Area implements Iterable<Area> {
 			return o.sx - ex;
 		throw new AssertionError(o);
 	}
-	public int ydist(Area o) {
+	public int ydist(final Area o) {
 		if(sy < o.ey && o.sy < ey)
 			return 0;
 		if(o.ey < sy)
@@ -115,7 +116,7 @@ public final class Area implements Iterable<Area> {
 			return o.sy - ey;
 		throw new AssertionError(o);
 	}
-	public Area adjacent(int axis) {
+	public Area adjacent(final int axis) {
 		switch(axis) {
 		case 0:
 			return new Area(ex, sy, ex + 1, ey);
@@ -128,13 +129,12 @@ public final class Area implements Iterable<Area> {
 		return new Area(0, 0, ex - sx, ey - sy);
 	}
 	public final static Area ZERO_AREA = new Area(0, 0, 0, 0);
-	public static Area coverage(Iterable<Area> ax) {
-		Iterator<Area> i = ax.iterator();
-		if(!i.hasNext()) {
+	public static Area coverage(final Iterable<Area> ax) {
+		final Iterator<Area> i = ax.iterator();
+		if(!i.hasNext())
 			return ZERO_AREA;
-		}
 		int lx, ly, hx, hy;
-		Area a = i.next();
+		final Area a = i.next();
 		lx = a.sx; ly = a.sy; hx = a.ex; hy = a.ey;
 		while(i.hasNext()) {
 			if(a.sx < lx) lx = a.sx;
@@ -144,30 +144,29 @@ public final class Area implements Iterable<Area> {
 		}
 		return new Area(lx, ly, hx, hy);
 	}
-	public static Area coverage(Area... ax) {
+	public static Area coverage(final Area... ax) {
 		return coverage(ax);
 	}
-	public boolean coveredBy(Iterable<Area> ax) {
-		int rowwidth = width();
+	public boolean coveredBy(final Iterable<Area> ax) {
+		final int rowwidth = width();
 		int cells = rowwidth * height();
-		boolean[] c = new boolean[cells];
-		for(Area a : ax) {
-			for(Area p : a) {
+		final boolean[] c = new boolean[cells];
+		for(final Area a : ax)
+			for(final Area p : a) {
 				if(!overlap(p))
 					return false;
-				int i = (p.sy - sy) * rowwidth + p.sx - sx;
+				final int i = (p.sy - sy) * rowwidth + p.sx - sx;
 				assert !c[i];
 				c[i] = true;
 				cells--;
 			}
-		}
 		return cells == 0;
 	}
-	public boolean extendedBy(Iterable<Area> ax) {
-		Area ext = coverage(ax);
+	public boolean extendedBy(final Iterable<Area> ax) {
+		final Area ext = coverage(ax);
 		if(!ext.coveredBy(ax))
 			return false;
-		return (ex == ext.sx && sy == ext.sy && ey == ext.ey)
-			|| (ey == ext.sy && sx == ext.sx && ex == ext.ex);
+		return ex == ext.sx && sy == ext.sy && ey == ext.ey
+		|| ey == ext.sy && sx == ext.sx && ex == ext.ex;
 	}
 }
