@@ -23,8 +23,9 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 
 public class SquigglyPath implements PathIterator {
-	double x, y, l, p, wl, a, off, last_off, xm, ym;
-	int segment;
+	final private double x, y, l, wl, a, xm, ym;
+	private double off, last_off, p;
+	private int segment;
 	public SquigglyPath(final Point2D from, final Point2D to, double phase,
 			final double wavelength, final double amplitude)
 	{

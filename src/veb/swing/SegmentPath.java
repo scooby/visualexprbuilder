@@ -28,8 +28,8 @@ import java.awt.geom.Point2D;
 public class SegmentPath implements PathIterator {
 	private final int ret;
 	private final int wind;
-	private boolean done;
 	private final double[] coords;
+	private boolean done;
 	public SegmentPath(final int r, final double x1, final double y1, final double x2, final double y2,
 			final double x3, final double y3, final int w)
 	{

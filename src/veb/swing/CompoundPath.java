@@ -30,7 +30,7 @@ import java.util.Iterator;
  */
 public class CompoundPath implements PathIterator {
 	private final Iterator<? extends PathIterator> pii;
-	PathIterator pi;
+	private PathIterator pi;
 	public CompoundPath(final Iterable<? extends PathIterator> pathCollection) {
 		pii = pathCollection.iterator();
 		pi = null;
