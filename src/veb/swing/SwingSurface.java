@@ -1,7 +1,7 @@
 package veb.swing;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 import veb.Area;
 import veb.Drawable;
@@ -13,19 +13,14 @@ import veb.Vector;
  * This is created to arrange the decorations and Swing objects as laid out by veb.Layout
  */
 public class SwingSurface implements Surface {
-	final private List<SwingDecoration> pdx;
+	final private Map<Area, SwingDecoration> decMap;
 	
 	public SwingSurface() {
-		pdx = new ArrayList<SwingDecoration>();
+		decMap = new HashMap<Area, SwingDecoration>();
 	}
 	@Override
 	public void draw(final Vector start, final Vector extent, final Area where, final Drawable dec) {
-		
-	}
-	/**
-	 * @return the pdx
-	 */
-	public List<SwingDecoration> getPdx() {
-		return pdx;
+		// look up all possible connections
+		// hook into existing pieces in the map
 	}
 }
