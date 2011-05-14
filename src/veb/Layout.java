@@ -8,7 +8,7 @@ public class Layout {
 	final private Surface surface;
 	private Grid grid;
 
-	public Layout(final Direction d, final Tree gt, final Surface s) {
+	public Layout(final Tree gt, final Surface s) {
 		tree = gt;
 		surface = s;
 	}

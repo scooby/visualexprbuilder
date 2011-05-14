@@ -2,11 +2,47 @@ package veb;
 
 import java.util.Iterator;
 
-public final class Area implements Iterable<Area> {
+/**
+ * @author ben
+ * 
+ */
+/**
+ * @author ben
+ *
+ */
+/**
+ * @author ben
+ *
+ */
+/**
+ * @author ben
+ *
+ */
+public final class Area implements Iterable<Area>, Comparable<Area> {
+	/**
+	 * The column the area starts on.
+	 */
 	final public int sx;
+	/**
+	 * The first column that is not part of the area.
+	 * That is, for every column x, x is in the area iff sx <= x < ex.
+	 */
 	final public int ex;
+	/**
+	 * The row the area starts on.
+	 */
 	final public int sy;
+	/**
+	 * The first row that is not part of the area.
+	 * That is, for every row y, y is in the area iff sy <= y < ey.
+	 */	
 	final public int ey;
+	/**
+	 * @param sx First column of the area.
+	 * @param sy First row of the area.
+	 * @param ex Column after the last column.
+	 * @param ey Row after the last row.
+	 */
 	public Area(final int sx, final int sy, final int ex, final int ey) {
 		assert ex >= sx && ey >= sy && sx >= 0 && sy >= 0;
 		this.sx = sx;
@@ -14,10 +50,27 @@ public final class Area implements Iterable<Area> {
 		this.sy = sy;
 		this.ey = ey;
 	}
+	/**
+	 * @return number of columns in area.
+	 */
 	public int width() { return ex - sx; }
+	/**
+	 * @return number of rows in area.
+	 */
 	public int height() { return ey - sy; }
+	/**
+	 * @return width * height
+	 */
+	public int area() { return width() * height(); }
+	/**
+	 * @param s Scaling factor.
+	 * @return New area with origin and area scaled by s.
+	 */
 	public Area scale(final int s) {
-		return new Area(sx * s, sy * s, ex * s, ey * s);
+		if(s >= 0)
+			return new Area(sx * s, sy * s, ex * s, ey * s);
+		else
+			return new Area(ex * s, ey * s, sx * s, sy * s);
 	}
 	public Area inset(final int i) {
 		return new Area(sx + i, sy + i, ex - i, ey - i);
@@ -73,6 +126,9 @@ public final class Area implements Iterable<Area> {
 			return false;
 		return true;
 	}
+	/* (non-Javadoc)
+	 * @see java.lang.Iterable#iterator()
+	 */
 	@Override
 	public Iterator<Area> iterator() {
 		return new Iterator<Area>() {
@@ -98,6 +154,11 @@ public final class Area implements Iterable<Area> {
 			}
 		};
 	}
+	/**
+	 * Number of empty columns between two areas.
+	 * @param other area
+	 * @return distance
+	 */
 	public int xdist(final Area o) {
 		if(sx < o.ex && o.sx < ex)
 			return 0;
@@ -107,6 +168,11 @@ public final class Area implements Iterable<Area> {
 			return o.sx - ex;
 		throw new AssertionError(o);
 	}
+	/**
+	 * Number of empty rows between two areas.
+	 * @param other area
+	 * @return distance
+	 */
 	public int ydist(final Area o) {
 		if(sy < o.ey && o.sy < ey)
 			return 0;
@@ -116,6 +182,11 @@ public final class Area implements Iterable<Area> {
 			return o.sy - ey;
 		throw new AssertionError(o);
 	}
+	/**
+	 * Creates an area adjacent to this one that is one row or column thick.
+	 * @param axis 0: creates a column thick area to the right, 1: creates a row area below
+	 * @return New area created.
+	 */
 	public Area adjacent(final int axis) {
 		switch(axis) {
 		case 0:
@@ -125,10 +196,16 @@ public final class Area implements Iterable<Area> {
 		}
 		throw new IllegalArgumentException();
 	}
+	/**
+	 * @return new area at origin
+	 */
 	public Area zeroize() {
 		return new Area(0, 0, ex - sx, ey - sy);
 	}
 	public final static Area ZERO_AREA = new Area(0, 0, 0, 0);
+	/**
+	 * @return an area that covers all the areas in iterable.
+	 */
 	public static Area coverage(final Iterable<Area> ax) {
 		final Iterator<Area> i = ax.iterator();
 		if(!i.hasNext())
@@ -144,9 +221,15 @@ public final class Area implements Iterable<Area> {
 		}
 		return new Area(lx, ly, hx, hy);
 	}
+	/**
+	 * @return an area that covers all the areas in parameters.
+	 */
 	public static Area coverage(final Area... ax) {
 		return coverage(ax);
 	}
+	/**
+	 * @return whether or not this area is fully covered by the parameters
+	 */
 	public boolean coveredBy(final Iterable<Area> ax) {
 		final int rowwidth = width();
 		int cells = rowwidth * height();
@@ -162,11 +245,31 @@ public final class Area implements Iterable<Area> {
 			}
 		return cells == 0;
 	}
+	/**
+	 * 
+	 * @return whether or not the iterable of areas extend this area
+	 */
 	public boolean extendedBy(final Iterable<Area> ax) {
 		final Area ext = coverage(ax);
 		if(!ext.coveredBy(ax))
 			return false;
 		return ex == ext.sx && sy == ext.sy && ey == ext.ey
 		|| ey == ext.sy && sx == ext.sx && ex == ext.ex;
+	}
+	/**
+	 * Order by rows, then columns, then area, then width.
+	 */
+	@Override
+	public int compareTo(final Area other) {
+		int c = compare(sy, other.sy);
+		if(c != 0) return c;
+		c = compare(sx, other.sx);
+		if(c != 0) return c;
+		c = compare(area(), other.area());
+		if(c != 0) return c;
+		return compare(width(), other.width());
+	}
+	static private int compare(int a, int b) {
+		return a == b ? 0 : (a < b ? -1 : 1);
 	}
 }

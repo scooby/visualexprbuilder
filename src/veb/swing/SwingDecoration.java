@@ -22,5 +22,5 @@ public abstract class SwingDecoration implements Drawable {
 		return false;
 	}
 
-	abstract public boolean connectsTo(Area otherGrid, SwingDecoration other);
+	abstract public boolean perimetersTo(Area otherGrid, SwingDecoration other);
 }

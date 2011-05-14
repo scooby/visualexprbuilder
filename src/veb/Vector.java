@@ -77,6 +77,26 @@ public final class Vector {
 			return false;
 		return true;
 	}
+	enum cardinal {
+		north(0, 1),
+		east(1, 0),
+		south(0, -1),
+		west(-1, 0);
+		public Vector v;
+		cardinal(int a, int b) {
+			v = new Vector(a, b);
+		}
+	}
+	enum corner {
+		ne(1, 1),
+		nw(-1, 1),
+		se(1, -1),
+		sw(-1, -1);
+		public Vector v;
+		corner(int a, int b) {
+			v = new Vector(a, b);
+		}
+	}
 }
 
 
