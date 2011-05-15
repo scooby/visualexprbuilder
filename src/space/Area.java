@@ -1,26 +1,15 @@
-package veb;
+package space;
 
 import java.util.Iterator;
+import space.Vector.cardinal;
 
-/**
- * @author ben
- * 
- */
-/**
- * @author ben
- *
- */
-/**
- * @author ben
- *
- */
 /**
  * @author ben
  *
  */
 public final class Area implements Iterable<Area>, Comparable<Area> {
 	/**
-	 * The column the area starts on.
+	 * The column the area starts on; also the westernmost column.
 	 */
 	final public int sx;
 	/**
@@ -29,7 +18,7 @@ public final class Area implements Iterable<Area>, Comparable<Area> {
 	 */
 	final public int ex;
 	/**
-	 * The row the area starts on.
+	 * The row the area starts on; also the "southernmost" row.
 	 */
 	final public int sy;
 	/**
@@ -246,7 +235,14 @@ public final class Area implements Iterable<Area>, Comparable<Area> {
 		return cells == 0;
 	}
 	/**
-	 * 
+	 * Example of extended by:
+	 * <pre>
+	 * +------+---+
+	 * |      | A |   'this' is extended by {A, B}.
+	 * | this +---+
+	 * |      | B |
+	 * +------+---+
+	 * </pre>
 	 * @return whether or not the iterable of areas extend this area
 	 */
 	public boolean extendedBy(final Iterable<Area> ax) {
@@ -256,6 +252,30 @@ public final class Area implements Iterable<Area>, Comparable<Area> {
 		return ex == ext.sx && sy == ext.sy && ey == ext.ey
 		|| ey == ext.sy && sx == ext.sx && ex == ext.ex;
 	}
+	/**
+	 * 
+	 * @return the direction in which this area can merge
+	 * 
+	 */
+	public cardinal canMergeWith(Area a) {
+		if(sy == a.sy && ey == a.ey) {
+			// Cases: East/west
+			if(sx == a.ex)
+				return cardinal.west;
+			if(ex == a.sx)
+				return cardinal.east;
+			return null;
+		} else if(sx == a.sx && ex == a.ex) {
+			// North/South
+			if(sy == a.ey)
+				return cardinal.south;
+			if(ey == a.sy)
+				return cardinal.north;
+			return null;
+		} else
+			return null;
+	}
+	
 	/**
 	 * Order by rows, then columns, then area, then width.
 	 */

@@ -1,6 +1,7 @@
 package veb;
+import space.Num;
 
-public interface Content extends Drawable {
+public interface Content<T extends Num> extends Drawable<T> {
 	/**
 	 * Each content node is going to need to draw some amount of decoration or other stuff around it.
 	 * This method allows it to add additional content in all directions.
@@ -8,7 +9,7 @@ public interface Content extends Drawable {
 	 * @param t
 	 * @return
 	 */
-	Drawable getDecoration(int s, int t);
+	Drawable<T> getDecoration(int s, int t);
 	/**
 	 * This constant indicates how many layers of decoration there is around content.
 	 */

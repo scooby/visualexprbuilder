@@ -1,26 +1,25 @@
 package veb.swing;
 
-import veb.Area;
+import space.Float;
+import space.Area;
+import space.Vector;
+import space.Vector.cardinal;
 import veb.Drawable;
-import veb.Vector;
 
-public abstract class SwingDecoration implements Drawable {
-	protected Vector assignedOrigin;
-	protected Vector assignedExtent;
+public abstract class SwingDecoration implements Drawable<Float> {
+	protected Vector<Float> assignedOrigin;
+	protected Vector<Float> assignedExtent;
 	protected Area assignedGrid;
 	protected SwingDecoration[] connections;
 	
-	@Override
-	abstract public Vector getSize();
-
-	@Override
-	abstract public Drawable merge(Drawable o);
-
-	@Override
-	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return false;
+	public SwingDecoration(Area setup) {
+		assignedGrid = setup;
+		assignedOrigin = null;
+		assignedExtent = null;
 	}
-
-	abstract public boolean perimetersTo(Area otherGrid, SwingDecoration other);
+	
+	@Override
+	abstract public Drawable<Float> merge(Drawable<Float> o);
+	
+	abstract public cardinal perimetersTo(SwingDecoration other);
 }

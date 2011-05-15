@@ -4,21 +4,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-final public class Grid implements Iterable<Elem>{
+import space.Num;
+import space.Area;
+
+final public class Grid<T extends Num> implements Iterable<Elem<T>>{
 	final private Area dims;
 	final private int rowwidth;
-	final private Elem[] ex;
-	final private Map<Drawable, Set<Area>> m;
+	final private List<Elem<T>> ex;
+	final private Map<Drawable<T>, Set<Area>> m;
 	private Grid(final Area a) {
 		assert a.sx == 0 && a.sy == 0;
 		dims = a;
 		rowwidth = width();
-		ex = new Elem[width() * height()];
-		m = new HashMap<Drawable, Set<Area>>();
+		ex = new ArrayList<Elem<T>>(width() * height());
+		m = new HashMap<Drawable<T>, Set<Area>>();
 	}
 	public int width() {
 		return dims.width();
@@ -26,43 +30,56 @@ final public class Grid implements Iterable<Elem>{
 	public int height() {
 		return dims.height();
 	}
-	private void setCell(final int x, final int y, final Elem e) {
-		ex[y * rowwidth + x] = e;
-		final Drawable d = e.getD();
+	private void _set(final Area p, Elem<T> e) {
+		ex.set(p.sy * rowwidth + p.sx, e);
+	}
+	private Elem<T> _pop(Area p) {
+		final int i = p.sy * rowwidth + p.sx;
+		Elem<T> r = ex.get(i);
+		ex.set(i, null);
+		return r;
+	}
+	private Elem<T> _get(Area p) {
+		return ex.get(p.sy * rowwidth + p.sx);
+	}
+	/*private Elem<T> _get(final int x, final int y) {
+		return ex.get(y * rowwidth + x);
+	}*/
+	private void setCell(Area p, final Elem<T> e) {
+		_set(p, e);
+		final Drawable<T> d = e.getD();
 		if(!m.containsKey(d))
 			m.put(d, new HashSet<Area>());
 		m.get(d).add(e.getA());
 	}
-	public Area getArea(final int x, final int y) {
-		return ex[y * rowwidth + x].getA();
+	/*public Area getArea(final int x, final int y) {
+		return _get(x, y).getA();
 	}
-	public Drawable getDrawable(final int x, final int y) {
-		return ex[y * rowwidth + x].getD();
-	}
+	public Drawable<T> getDrawable(final int x, final int y) {
+		return _get(x, y).getD();
+	}*/
 	final static private int dt = Content.DECO_THICK;
 	final static private int de = Content.DECO_EXTENT;
-	private void setArea(final Area a, final Content c) {
+	private void setArea(final Area a, final Content<T> c) {
 		final Area ai = a.inset(de);
-		final Elem e = new Elem(ai, c);
+		final Elem<T> e = new Elem<T>(ai, c);
 		for(final Area p : a)
 			if(p.overlap(ai))
-				setCell(p.sx, p.sy, e);
+				setCell(p, e);
 			else {
-				final Drawable d = c.getDecoration(ai.xdist(p), ai.ydist(p));
-				setCell(p.sx, p.sy, new Elem(p, d));
+				final Drawable<T> d = c.getDecoration(ai.xdist(p), ai.ydist(p));
+				setCell(p, new Elem<T>(p, d));
 			}
 	}
-	private void setCells(final Area a, final Drawable d) {
-		final Elem e = new Elem(a, d);
+	private void setCells(final Area a, final Drawable<T> d) {
+		final Elem<T> e = new Elem<T>(a, d);
 		for(final Area p : a)
-			setCell(p.sx, p.sy, e);
+			setCell(p, e);
 	}
 	private void removeArea(final Area a) {
 		for(final Area p: a) {
-			final int i = p.sx + rowwidth * p.sy;
-			final Elem e = ex[i];
-			ex[i] = null;
-			final Drawable d = e.getD();
+			final Elem<T> e = _pop(p);
+			final Drawable<T> d = e.getD();
 			final Area ea = e.getA();
 			final Set<Area> ax = m.get(d);
 			ax.remove(ea);
@@ -70,30 +87,30 @@ final public class Grid implements Iterable<Elem>{
 				m.remove(d);
 		}
 	}
-	public static Grid fromMap(final Map<Content, Area> m) {
+	public static <TT extends Num> Grid<TT> fromMap(final Map<Content<TT>, Area> m) {
 		if(m.isEmpty())
-			return new Grid(new Area(0, 0, 0, 0));
+			return new Grid<TT>(new Area(0, 0, 0, 0));
 		final Area ac = Area.coverage(m.values());
 		final Area dims = ac.zeroize().scale(dt);
-		final Grid g = new Grid(dims);
-		for(final Entry<Content, Area> e : m.entrySet())
+		final Grid<TT> g = new Grid<TT>(dims);
+		for(final Entry<Content<TT>, Area> e : m.entrySet())
 			g.setArea(e.getValue().offset(-ac.sx, -ac.sy).scale(dt), e.getKey());
 		return g;
 	}
 	@Override
-	public Iterator<Elem> iterator() {
-		final ArrayList<Elem> al = new ArrayList<Elem>();
-		for(final Entry<Drawable, Set<Area>> da: m.entrySet()) {
-			final Drawable d = da.getKey();
+	public Iterator<Elem<T>> iterator() {
+		final ArrayList<Elem<T>> al = new ArrayList<Elem<T>>();
+		for(final Entry<Drawable<T>, Set<Area>> da: m.entrySet()) {
+			final Drawable<T> d = da.getKey();
 			for(final Area a : da.getValue())
-				al.add(new Elem(a, d));
+				al.add(new Elem<T>(a, d));
 		}
 		return al.iterator();
 	}
 	public void mergeDecorations() {
 		for(int axis = 0; axis < 2; axis++)
-			for(final Entry<Drawable, Set<Area>> da: m.entrySet()) {
-				final Drawable d = da.getKey();
+			for(final Entry<Drawable<T>, Set<Area>> da: m.entrySet()) {
+				final Drawable<T> d = da.getKey();
 				if(d == null || d instanceof Content)
 					continue;
 				for(final Area a: da.getValue()) {
@@ -102,11 +119,11 @@ final public class Grid implements Iterable<Elem>{
 						aa = a.adjacent(axis);
 						if(aa.width() > 1 || aa.height() > 1)
 							break;
-						final Elem e = ex[aa.sy * rowwidth + aa.sx];
-						final Drawable dd = e.getD();
+						final Elem<T> e = _get(aa);
+						final Drawable<T> dd = e.getD();
 						if(dd == null || dd.isEmpty())
 							continue;
-						final Drawable dm = d.merge(dd);
+						final Drawable<T> dm = d.merge(dd);
 						if(dm == null)
 							continue;
 						aa = Area.coverage(a, aa);
@@ -118,8 +135,8 @@ final public class Grid implements Iterable<Elem>{
 	}
 	public void simplify() {
 		for(int axis = 0; axis < 2; axis++)
-			for(final Entry<Drawable, Set<Area>> da: m.entrySet()) {
-				final Drawable d = da.getKey();
+			for(final Entry<Drawable<T>, Set<Area>> da: m.entrySet()) {
+				final Drawable<T> d = da.getKey();
 				if(d == null || d instanceof Content)
 					continue;
 				areaLoop: for(final Area a: da.getValue()) {
@@ -128,7 +145,7 @@ final public class Grid implements Iterable<Elem>{
 						break;
 					final ArrayList<Area> al = new ArrayList<Area>();
 					for(final Area p: aa) {
-						final Elem e = ex[p.sy * rowwidth + p.sx];
+						final Elem<T> e = _get(p);
 						if(e.getD() != d)
 							continue areaLoop;
 						al.add(e.getA());

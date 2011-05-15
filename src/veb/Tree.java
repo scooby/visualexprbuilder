@@ -1,5 +1,7 @@
 package veb;
 
+import space.Num;
+
 /**
  * All the tree needs to do is say:
  * Here are the nodes
@@ -7,8 +9,8 @@ package veb;
  * @author ben
  *
  */
-public interface Tree {
-	Content getRoot();
-	Iterable<Content> getChildrenOf(Content node);
-	Content getParentOf(Content node);
+public interface Tree<T extends Num> {
+	Content<T> getRoot();
+	Iterable<Content<T>> getChildrenOf(Content<T> node);
+	Content<T> getParentOf(Content<T> node);
 }
