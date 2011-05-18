@@ -10,6 +10,8 @@ public final class Int extends IntegralImpl {
 	@Override
 	public long longVal() {	return val;	}
 	@Override
+	public int intVal() { return val; }
+	@Override
 	public double doubleVal() {	return (double) val; }
 	@Override
 	public Num abs() { return val < 0 ? new Int(-val) : this; }

@@ -11,6 +11,7 @@ import java.util.Set;
 
 import space.Num;
 import space.Area;
+import space.Vector.cardinal;
 
 final public class Grid<T extends Num> implements Iterable<Elem<T>>{
 	final private Area dims;
@@ -107,23 +108,28 @@ final public class Grid<T extends Num> implements Iterable<Elem<T>>{
 		}
 		return al.iterator();
 	}
+	/**
+	 * Attempts to merge compatible decorations.
+	 */
 	public void mergeDecorations() {
-		for(int axis = 0; axis < 2; axis++)
+		for(cardinal axis : cardinal.values()) {
+			if(axis.ordinal() >= 2)
+				break; // only need north and east.
 			for(final Entry<Drawable<T>, Set<Area>> da: m.entrySet()) {
 				final Drawable<T> d = da.getKey();
-				if(d == null || d instanceof Content)
+				if(d == null || d instanceof Content || d.isEmpty())
 					continue;
 				for(final Area a: da.getValue()) {
-					Area aa;
+					Area aa = a;
 					do {
-						aa = a.adjacent(axis);
+						aa = aa.adjacent(axis);
 						if(aa.width() > 1 || aa.height() > 1)
 							break;
 						final Elem<T> e = _get(aa);
 						final Drawable<T> dd = e.getD();
 						if(dd == null || dd.isEmpty())
 							continue;
-						final Drawable<T> dm = d.merge(dd);
+						final Drawable<T> dm = d.merge(axis, dd);
 						if(dm == null)
 							continue;
 						aa = Area.coverage(a, aa);
@@ -132,9 +138,12 @@ final public class Grid<T extends Num> implements Iterable<Elem<T>>{
 					} while(aa.overlap(dims));
 				}
 			}
+		}
 	}
 	public void simplify() {
-		for(int axis = 0; axis < 2; axis++)
+		for(cardinal axis : cardinal.values()) {
+			if(axis.ordinal() >= 2)
+				break; // only need north and east.
 			for(final Entry<Drawable<T>, Set<Area>> da: m.entrySet()) {
 				final Drawable<T> d = da.getKey();
 				if(d == null || d instanceof Content)
@@ -158,5 +167,6 @@ final public class Grid<T extends Num> implements Iterable<Elem<T>>{
 					setCells(aa, d);
 				}
 			}
+		}
 	}
 }

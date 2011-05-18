@@ -1,6 +1,8 @@
 package veb.swing;
 
-import space.Area;
+import java.util.Collections;
+import java.util.Set;
+
 import space.Float;
 import space.Vector;
 import space.Vector.cardinal;
@@ -8,22 +10,17 @@ import veb.Drawable;
 
 public class EmptyDecoration extends SwingDecoration {
 	
-	public EmptyDecoration(Area setup) {
-		super(setup);
+	public EmptyDecoration() {
+		super();
 	}
 
 	@Override
-	public Drawable<Float> merge(Drawable<Float> o) {
+	public Drawable<Float> merge(cardinal c, Drawable<Float> o) {
 		if(o != null && o instanceof EmptyDecoration) {
-			EmptyDecoration ed = (EmptyDecoration) o;
-			if(assignedGrid.canMergeWith(ed.assignedGrid) != null)
-				return new EmptyDecoration(Area.coverage(assignedGrid, ed.assignedGrid));
+			//EmptyDecoration ed = (EmptyDecoration) o;
+			//if(assignedGrid.canMergeWith(ed.assignedGrid) != null)
+			return this;
 		}
-		return null;
-	}
-
-	@Override
-	public cardinal perimetersTo(SwingDecoration other) {
 		return null;
 	}
 
@@ -37,6 +34,18 @@ public class EmptyDecoration extends SwingDecoration {
 	@Override
 	public Vector<Float> getSize() {
 		return marginSize;
+	}
+
+	@Override
+	public Set<cardinal> connections() {
+		// TODO Auto-generated method stub
+		return Collections.emptySet();
+	}
+
+	@Override
+	public cardinal perimetersTo(cardinal c, SwingDecoration other) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

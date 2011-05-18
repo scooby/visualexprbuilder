@@ -1,6 +1,9 @@
 package veb.swing;
 
 import java.util.EnumMap;
+import java.util.EnumSet;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import space.Area;
 import space.Float;
@@ -36,13 +39,13 @@ public class BorderDecoration extends SwingDecoration {
 			return filled.get(c).booleanValue();
 		return false;
 	}
-	public BorderDecoration(Area setup) {
-		super(setup);
+	public BorderDecoration() {
+		super();
 		this.borders = new EnumMap<cardinal, border>(cardinal.class);
 		this.filled = new EnumMap<corner, Boolean>(corner.class);
 	}
-	public static BorderDecoration cornerPiece(Area where, corner which, border type) {
-		BorderDecoration bd = new BorderDecoration(where);
+	public static BorderDecoration cornerPiece(corner which, border type) {
+		BorderDecoration bd = new BorderDecoration();
 		bd.borders.put(which.ns(), type);
 		bd.borders.put(which.ew(), type);
 		bd.filled.put(which, Boolean.TRUE);
@@ -56,8 +59,8 @@ public class BorderDecoration extends SwingDecoration {
 	 * @param type type of border.
 	 * @return the decoration
 	 */
-	public static BorderDecoration straightPiece(Area where, cardinal component, border type) {
-		BorderDecoration bd = new BorderDecoration(where);
+	public static BorderDecoration straightPiece(cardinal component, border type) {
+		BorderDecoration bd = new BorderDecoration();
 		bd.borders.put(component.cw90(), type);
 		bd.borders.put(component.ccw90(), type);
 		bd.filled.put(component.cw45(), Boolean.TRUE);
@@ -66,17 +69,13 @@ public class BorderDecoration extends SwingDecoration {
 	}
 
 	@Override
-	public Drawable<Float> merge(Drawable<Float> o) {
+	public Drawable<Float> merge(cardinal c, Drawable<Float> o) {
 		if(o == null || !(o instanceof BorderDecoration))
 			return null;
 		BorderDecoration d = (BorderDecoration) o;
-		cardinal c = assignedGrid.canMergeWith(d.assignedGrid);
-		if(c == null)
-			return null;
-		Area ma = Area.coverage(assignedGrid, d.assignedGrid);
 		if(getBorder(c.cw90()) == d.getBorder(c.cw90())
 				&& getBorder(c.ccw90()) == d.getBorder(c.ccw90())) {
-			BorderDecoration n = new BorderDecoration(ma);
+			BorderDecoration n = new BorderDecoration();
 			cardinal c180 = c.turn180();
 			n.borders.put(c, d.getBorder(c));
 			n.borders.put(c.cw90(), getBorder(c.cw90()));
@@ -92,11 +91,10 @@ public class BorderDecoration extends SwingDecoration {
 	}
 
 	@Override
-	public cardinal perimetersTo(SwingDecoration other) {
+	public cardinal perimetersTo(cardinal c, SwingDecoration other) {
 		if(other == null || !(other instanceof BorderDecoration))
 			return null;
 		BorderDecoration d = (BorderDecoration) other;
-		cardinal c = assignedGrid.canMergeWith(d.assignedGrid);
 		cardinal c180 = c.turn180();
 		if(getBorder(c) != border.none && d.getBorder(c180) != border.none) {
 			if(getFilled(c.cw45()))
@@ -125,5 +123,14 @@ public class BorderDecoration extends SwingDecoration {
 	public Vector<Float> getSize() {
 		// TODO Auto-generated method stub
 		return borderThickness;
+	}
+	@Override
+	public Set<cardinal> connections() {
+		EnumSet<cardinal> cs = EnumSet.noneOf(cardinal.class);
+		for(Entry<cardinal, border> e : borders.entrySet()) {
+			if(e.getValue() != border.none)
+				cs.add(e.getKey());
+		}
+		return cs;
 	}
 }

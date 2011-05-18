@@ -101,4 +101,10 @@ public abstract class NumImpl implements Rational, Integral {
 	public static <T extends Num> T mult(T a, Num b) {
 		return (T) a.mult(b);
 	}
+	public int intVal() {
+		return (int) longVal();
+	}
+	public float floatVal() {
+		return (float) doubleVal();
+	}
 }

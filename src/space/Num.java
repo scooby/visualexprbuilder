@@ -2,7 +2,9 @@ package space;
 
 public interface Num {
 	public long longVal();
+	public int intVal();
 	public double doubleVal();
+	public float floatVal();
 	public Num abs();
 	public Num factor(int i);
 	public Num scale(int s);

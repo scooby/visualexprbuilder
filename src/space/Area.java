@@ -50,7 +50,7 @@ public final class Area implements Iterable<Area>, Comparable<Area> {
 	/**
 	 * @return width * height
 	 */
-	public int area() { return width() * height(); }
+	public int area() { return (ex - sx) * (ey - sy); }
 	/**
 	 * @param s Scaling factor.
 	 * @return New area with origin and area scaled by s.
@@ -173,17 +173,18 @@ public final class Area implements Iterable<Area>, Comparable<Area> {
 	}
 	/**
 	 * Creates an area adjacent to this one that is one row or column thick.
-	 * @param axis 0: creates a column thick area to the right, 1: creates a row area below
+	 * @param axis indicates the cardinal direction in which to extend the area.
 	 * @return New area created.
 	 */
-	public Area adjacent(final int axis) {
-		switch(axis) {
-		case 0:
-			return new Area(ex, sy, ex + 1, ey);
-		case 1:
-			return new Area(sx, ey, ex, ey + 1);
-		}
-		throw new IllegalArgumentException();
+	public Area adjacent(final cardinal axis) {
+		int vx = axis.v.x.intVal(),
+			vy = axis.v.y.intVal();
+		return new Area(
+				vx > 0 ? ex : sx + vx,
+				vy > 0 ? ey : sy + vy,
+				vx < 0 ? sx : ex + vx,
+				vy < 0 ? sy : ey + vy				
+		);
 	}
 	/**
 	 * @return new area at origin

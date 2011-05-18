@@ -20,7 +20,7 @@ public class SwingSurface implements Surface<Float> {
 		decMap = new HashMap<Area, SwingDecoration>();
 	}
 	@Override
-	public void draw(final Vector<Float> start, final Vector<Float> extent, final Area where, final Drawable<Float> dec) {
+	public void draw(Vector<Float> start, Vector<Float> extent, Area where, Drawable<Float> dec) {
 		// look up all possible connections
 		// hook into existing pieces in the map
 		

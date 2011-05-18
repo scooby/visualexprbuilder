@@ -8,6 +8,8 @@ public final class Float extends RationalImpl {
 	@Override
 	public double doubleVal() {	return val; }
 	@Override
+	public float floatVal() { return val; }
+	@Override
 	public Num abs() { return val < 0.0f ? new Float(-val) : this; }
 	@Override
 	public int sign() {
